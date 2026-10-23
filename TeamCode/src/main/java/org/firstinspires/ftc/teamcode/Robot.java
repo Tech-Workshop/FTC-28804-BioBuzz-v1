@@ -9,6 +9,7 @@ import org.firstinspires.ftc.teamcode.Constants.General.Ball;
 import org.firstinspires.ftc.teamcode.subsystems.Drive;
 import org.firstinspires.ftc.teamcode.subsystems.Indexer;
 import org.firstinspires.ftc.teamcode.subsystems.Intake;
+import org.firstinspires.ftc.teamcode.subsystems.Ramp;
 import org.firstinspires.ftc.teamcode.subsystems.Shooter;
 import org.firstinspires.ftc.teamcode.subsystems.Sorter;
 import org.firstinspires.ftc.teamcode.subsystems.Turret;
@@ -18,9 +19,9 @@ public class Robot {
 	public Drive drive;
 	public Intake intake;
 	public Indexer indexer;
-	public Shooter shooterNectar,shooterPollen;
-	public Turret turretNectar,turretPollen;
-	public Sorter sorter;
+	public Shooter shooter;
+	public Turret turret;
+	public Ramp ramp;
 
 	//Global variables
 	public Telemetry telemetry;
@@ -44,10 +45,8 @@ public class Robot {
 		this.drive=new Drive(hardwareMap,telemetry,(startPose==null ? new Pose(72.0,72.0) : startPose),alliance);
 		this.intake=new Intake(hardwareMap,telemetry);
 		this.indexer=new Indexer(hardwareMap,telemetry);
-		this.sorter=new Sorter(hardwareMap,telemetry);
-		this.shooterNectar=new Shooter(hardwareMap,telemetry, Ball.NECTAR);
-		this.shooterPollen=new Shooter(hardwareMap,telemetry,Ball.POLLEN);
-		this.turretNectar=new Turret(hardwareMap,telemetry,Ball.NECTAR,alliance);
-		this.turretPollen=new Turret(hardwareMap,telemetry,Ball.POLLEN,alliance);
+		this.shooter=new Shooter(hardwareMap,telemetry);
+		this.turret=new Turret(hardwareMap,telemetry,alliance);
+		this.ramp=new Ramp(hardwareMap,telemetry);
 	}
 }

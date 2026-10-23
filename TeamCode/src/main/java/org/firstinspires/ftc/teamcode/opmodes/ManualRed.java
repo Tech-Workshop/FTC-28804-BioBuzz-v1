@@ -16,9 +16,8 @@ public class ManualRed extends LinearOpMode {
 	boolean firstLoop=true;
 	boolean disableTurrets=false;
 
-	ElapsedTime shooterNectarDelay=new ElapsedTime();
-	ElapsedTime shooterPollenDelay=new ElapsedTime();
-	boolean shooterNectarFlag=false,shooterPollenFlag=false;
+	ElapsedTime shooterDelay=new ElapsedTime();
+	boolean shooterFlag=false;
 
 	Pose defaultStart=new Pose(57.0,10.0,Math.toRadians(90.0));
 
@@ -33,31 +32,14 @@ public class ManualRed extends LinearOpMode {
 		robot.init(hardwareMap, telemetry, defaultStart, Constants.General.Alliance.RED);
 
 		//Initialize servo positions
-		robot.shooterNectar.closeGate();
-		robot.shooterPollen.closeGate();
-		robot.turretNectar.turnToDegrees(0.0);
-		robot.turretPollen.turnToDegrees(0.0);
-		robot.sorter.home();
-
-		/*
-		telemetry.addLine("Retract arm -- START --");
-		telemetry.update();
-		robot.intake.retractArm();
-		while(!robot.intake.isArmDone()) {
-			telemetry.addData("Retract arm pos:",robot.intake.getArmPosition());
-			telemetry.update();
-			robot.intake.armPeriodic();
-		}
-		telemetry.addLine("Retract arm -- END --");
-		telemetry.update();
-		*/
+		robot.shooter.closeGate();
+		robot.turret.turnToDegrees(0.0);
 
 		waitForStart();
 
 		while (opModeIsActive() && !isStopRequested()) {
 
 			if(firstLoop) {
-				robot.intake.extendArm();
 				firstLoop=false;
 			}
 
@@ -72,8 +54,7 @@ public class ManualRed extends LinearOpMode {
 				robot.drive.follower.setPose(forcedPose);
 
 				//Disable turrets
-				robot.turretNectar.turnToDegrees(0.0);
-				robot.turretPollen.turnToDegrees(0.0);
+				robot.turret.turnToDegrees(0.0);
 				disableTurrets=true;
 			}
 
@@ -113,80 +94,47 @@ public class ManualRed extends LinearOpMode {
 			//------------------------------------------
 			//SHOOTERS
 
-			//Shoot Nectar
-			if(gamepad1.right_trigger>=Constants.General.CONTROLLER_DEADBAND) {
-
-				//Wait 1 second, open gate and index
-				if(!shooterNectarFlag) {
-					robot.shooterNectar.spinFlywheel();
-					shooterNectarDelay.reset();
-					shooterNectarFlag=true;
-
-					//Spun up - open gate and index
-				} else if(shooterNectarDelay.time()>0.5 && robot.shooterNectar.speedWithinError()) {
-					robot.shooterNectar.openGate();
-					robot.indexer.index();
-				}
-
-			} else {
-				shooterNectarFlag=false;
-				robot.shooterNectar.stopFlywheel();
-				robot.shooterNectar.closeGate();
-			}
-
 			//Shoot Pollen
 			if(gamepad1.left_trigger>=Constants.General.CONTROLLER_DEADBAND) {
 				//Wait 1 second, open gate and index
-				if(!shooterPollenFlag) {
-					robot.shooterPollen.spinFlywheel();
-					shooterPollenDelay.reset();
-					shooterPollenFlag=true;
+				if(!shooterFlag) {
+					robot.shooter.spinFlywheel();
+					shooterDelay.reset();
+					shooterFlag=true;
 
 					//Spun up - open gate and index
-				} else if(shooterPollenDelay.time()>0.5 && robot.shooterPollen.speedWithinError()) {
-					robot.shooterPollen.openGate();
+				} else if(shooterDelay.time()>0.5 && robot.shooter.speedWithinError()) {
+					robot.shooter.openGate();
 					robot.indexer.index();
 					telemetry.addLine("Opened gate");
 				}
 
-				telemetry.addData("Shoot pollen - shoot target=",robot.shooterPollen.getTargetVelocity());
-				telemetry.addData("Shoot pollen - shoot actual=",robot.shooterPollen.getVelocity());
+				telemetry.addData("Shoot pollen - shoot target=",robot.shooter.getTargetVelocity());
+				telemetry.addData("Shoot pollen - shoot actual=",robot.shooter.getVelocity());
 
 			} else {
-				shooterPollenFlag=false;
-				robot.shooterPollen.stopFlywheel();
-				robot.shooterPollen.closeGate();
-			}
-
-			//------------------------------------------
-			//SORTER
-
-			if(gamepad2.a) {
-				robot.indexer.sortSpeed();
-				robot.sorter.sort();
-			} else {
-				robot.sorter.home();
+				shooterFlag=false;
+				robot.shooter.stopFlywheel();
+				robot.shooter.closeGate();
 			}
 
 			//------------------------------------------
 			//TURRETS
 
 			if(gamepad2.back) {
-				robot.turretNectar.turnToDegrees(0.0);
-				robot.turretPollen.turnToDegrees(0.0);
+				robot.turret.turnToDegrees(0.0);
 				disableTurrets=true;
 			}
 
-			//Run periodic methods
-			robot.intake.armPeriodic();
-			robot.shooterPollen.periodic();
-			robot.shooterNectar.periodic();
-
 			if(!disableTurrets) {
-				robot.turretNectar.turnToTarget();
-				robot.turretPollen.turnToTarget();
+				robot.turret.turnToTarget();
 			}
 
+			//Run periodic methods
+			robot.ramp.periodic();
+			robot.shooter.periodic();
+
+			//------------------------------------------
 			//Telemetry
 			telemetry.addData("PP (x)",robot.drive.follower.pose().x());
 			telemetry.addData("PP (y)",robot.drive.follower.pose().y());

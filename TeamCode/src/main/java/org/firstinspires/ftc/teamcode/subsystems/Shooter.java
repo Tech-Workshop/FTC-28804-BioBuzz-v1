@@ -11,7 +11,6 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Constants;
-import org.firstinspires.ftc.teamcode.Constants.General.Ball;
 
 public class Shooter {
 	private final DcMotorEx shooterMotor;
@@ -23,31 +22,16 @@ public class Shooter {
 	private double rampRate=Constants.Shooter.SHOOTER_RAMP_RATE;
 	private double lastPower=0.0; //Used for power ramping
 
-	public Shooter(HardwareMap hardwareMap, Telemetry telemetry, Ball ballType) {
-		//Nectar
-		if(ballType==Ball.NECTAR) {
-			//Get shooter
-			this.shooterMotor = hardwareMap.get(DcMotorEx.class, Constants.Shooter.SHOOTER_NECTAR_ID);
-			shooterMotor.setDirection(Constants.Shooter.SHOOTER_NECTAR_DIRECTION);
-			shotVelocity=Constants.Shooter.SHOOTER_NECTAR_VELOCITY;
+	public Shooter(HardwareMap hardwareMap, Telemetry telemetry) {
+		//Get shooter
+		this.shooterMotor = hardwareMap.get(DcMotorEx.class, Constants.Shooter.SHOOTER_ID);
+		shooterMotor.setDirection(Constants.Shooter.SHOOTER_DIRECTION);
+		shotVelocity=Constants.Shooter.SHOOTER_VELOCITY;
 
-			//Get ball gate
-			this.ballstopServo = hardwareMap.get(Servo.class, Constants.Shooter.BALLSTOP_NECTAR_ID);
-			ballstopClosedPos=Constants.Shooter.BALLSTOP_NECTAR_BLOCK;
-			ballstopOpenPos=Constants.Shooter.BALLSTOP_NECTAR_CLEAR;
-
-		//Pollen
-		} else {
-			//Get shooter
-			this.shooterMotor = hardwareMap.get(DcMotorEx.class, Constants.Shooter.SHOOTER_POLLEN_ID);
-			shooterMotor.setDirection(Constants.Shooter.SHOOTER_POLLEN_DIRECTION);
-			shotVelocity=Constants.Shooter.SHOOTER_POLLEN_VELOCITY;
-
-			//Get ball gate
-			this.ballstopServo = hardwareMap.get(Servo.class, Constants.Shooter.BALLSTOP_POLLEN_ID);
-			ballstopClosedPos=Constants.Shooter.BALLSTOP_POLLEN_BLOCK;
-			ballstopOpenPos=Constants.Shooter.BALLSTOP_POLLEN_CLEAR;
-		}
+		//Get ball stop
+		this.ballstopServo = hardwareMap.get(Servo.class, Constants.Shooter.BALLSTOP_ID);
+		ballstopClosedPos=Constants.Shooter.BALLSTOP_BLOCK;
+		ballstopOpenPos=Constants.Shooter.BALLSTOP_CLEAR;
 
 		this.telemetry=telemetry;
 	}

@@ -48,22 +48,11 @@ public class AutonBluePark extends OpMode {
 		robot.init(hardwareMap, telemetry, start, org.firstinspires.ftc.teamcode.Constants.General.Alliance.BLUE);
 
 		//Initialize servo positions
-		robot.shooterNectar.closeGate();
-		robot.shooterPollen.closeGate();
-		robot.turretNectar.turnToDegrees(0.0);
-		robot.turretPollen.turnToDegrees(0.0);
-		robot.sorter.home();
+		robot.shooter.closeGate();
+		robot.turret.turnToDegrees(0.0);
 
 		telemetry.addLine("Retract arm -- START --");
 		telemetry.update();
-
-		robot.intake.retractArm();
-		while(!robot.intake.isArmDone()) {
-			telemetry.addData("Retract arm pos:",robot.intake.getArmPosition());
-			telemetry.update();
-
-			robot.intake.armPeriodic();
-		}
 
 		telemetry.addLine("Retract arm -- END --");
 		telemetry.update();
@@ -71,8 +60,6 @@ public class AutonBluePark extends OpMode {
 
 	@Override
 	public void start() {
-		robot.intake.extendArm();
-
 		//Schedule autonomous routine
 		schedule(autoRoutine());
 	}
@@ -83,7 +70,7 @@ public class AutonBluePark extends OpMode {
 		Scheduler.execute();
 
 		//Periodic
-		robot.intake.armPeriodic();
+		robot.ramp.periodic();
 
 		//Save pose
 		PoseStorage.currentPose = robot.drive.follower.pose();

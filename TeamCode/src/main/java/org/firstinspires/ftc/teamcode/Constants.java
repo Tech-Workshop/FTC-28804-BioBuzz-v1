@@ -22,12 +22,6 @@ public class Constants {
 		public static final boolean CONTROLLER_AUTO_HEADING=true;
 		public static final double CONTROLLER_AUTO_ERROR=Math.PI/12;  //Allowed error before auto correct
 
-		//Ball types
-		public enum Ball {
-			POLLEN,
-			NECTAR
-		}
-
 		//Alliance types
 		public enum Alliance {
 			BLUE,
@@ -65,12 +59,6 @@ public class Constants {
 		public static final String DRIVE_RIGHT_FRONT_ID = "drive_right_front";
 		public static final String DRIVE_RIGHT_BACK_ID = "drive_right_back";
 
-		//Direction
-		public static final DcMotorSimple.Direction DRIVE_LEFT_FRONT_DIRECTION = DcMotorSimple.Direction.FORWARD;
-		public static final DcMotorSimple.Direction DRIVE_LEFT_BACK_DIRECTION = DcMotorSimple.Direction.REVERSE;
-		public static final DcMotorSimple.Direction DRIVE_RIGHT_FRONT_DIRECTION = DcMotorSimple.Direction.FORWARD;
-		public static final DcMotorSimple.Direction DRIVE_RIGHT_BACK_DIRECTION = DcMotorSimple.Direction.FORWARD;
-
 		//Maximum speed multiplier (0-1.0)
 		public static final double DRIVE_SPEED = 1.00;
 		public static final double TURN_POWER_MULTIPLIER = 0.6;
@@ -92,48 +80,45 @@ public class Constants {
 		public static final String INTAKE_ID = "intake";
 		public static final DcMotorSimple.Direction INTAKE_DIRECTION = DcMotorSimple.Direction.REVERSE;
 
-		public static final String INTAKE_ARM_LEFT_ID = "intake_arm_left"; //Axon Max
-		public static final String INTAKE_ARM_RIGHT_ID = "intake_arm_right"; //Axon Max
-
-		public static final double INTAKE_ARM_RETRACTED_POS=0.50; //Note, this is the position for both since it is exactly the middle
-		public static final double INTAKE_ARM_EXTENDED_POS=0.17; //Note, this is for right servo only (left is opposite 1.0-0.17=0.83)
-		public static final double INTAKE_ARM_INCREMENT=0.01; //Note, values above must exactly match (n)*increment
-
 		public static final double INTAKE_IN_SPEED=1200;
 		public static final double INTAKE_OUT_SPEED=-1000;
+	}
+
+	/*
+	 * Flower Ramp Constants
+	 */
+	public static final class Ramp {
+		public static final String RAMP_LEFT_ID = "ramp_left"; //Axon Max
+		public static final String RAMP_RIGHT_ID = "ramp_right"; //Axon Max
+
+		public static final double RAMP_UP_POS=0.50; //Note, this is the position for both since it is exactly the middle
+		public static final double RAMP_DOWN_POS=0.17; //Note, this is for right servo only (left is opposite 1.0-0.17=0.83)
+		public static final double RAMP_INCREMENT=0.01; //Note, values above must exactly match (n)*increment
 	}
 
 	/*
 	 * Shooter Constants
 	 */
 	public static final class Shooter {
-		public static final String SHOOTER_NECTAR_ID = "shooter_nectar";
-		public static final DcMotorSimple.Direction SHOOTER_NECTAR_DIRECTION = DcMotorSimple.Direction.FORWARD;
-
-		public static final String SHOOTER_POLLEN_ID = "shooter_pollen";
-		public static final DcMotorSimple.Direction SHOOTER_POLLEN_DIRECTION = DcMotorSimple.Direction.FORWARD;
+		public static final String SHOOTER_ID = "shooter";
+		public static final DcMotorSimple.Direction SHOOTER_DIRECTION = DcMotorSimple.Direction.FORWARD;
 
 		public static final double SHOOTER_PID_kS=0.05,SHOOTER_PID_kV=0.00034,SHOOTER_PID_kP=0.0009;
 		public static final double SHOOTER_RAMP_RATE=0.20;
 
-		public static final double SHOOTER_NECTAR_VELOCITY=2175; //Speed for nectar ball shot (2075)
-		public static final double SHOOTER_POLLEN_VELOCITY=2100; //Speed for pollen ball shot (1900)
+		public static final double SHOOTER_VELOCITY=2100; //Speed for pollen ball shot (1900)
 
-		public static final String BALLSTOP_NECTAR_ID = "ballstop_nectar"; //Axon Max+
-		public static final double BALLSTOP_NECTAR_BLOCK=0.63; //Minimum down position
-		public static final double BALLSTOP_NECTAR_CLEAR=0.42; //Maximum up position
-
-		public static final String BALLSTOP_POLLEN_ID = "ballstop_pollen"; //Axon Mini+
-		public static final double BALLSTOP_POLLEN_BLOCK=0.59; //Minimum down position
-		public static final double BALLSTOP_POLLEN_CLEAR=0.25; //Maximum up position
+		public static final String BALLSTOP_ID = "ballstop_nectar"; //Axon Max+
+		public static final double BALLSTOP_BLOCK=0.63; //Minimum down position
+		public static final double BALLSTOP_CLEAR=0.42; //Maximum up position
 	}
 
 	/*
 	 * Turret Constants
 	 */
 	public static final class Turret {
-		public static final String TURRET_NECTAR_ID = "turret_nectar";
-		public static final String TURRET_POLLEN_ID = "turret_pollen";
+		public static final String TURRET_LEFT_ID = "turret_left";
+		public static final String TURRET_RIGHT_ID = "turret_right";
 	}
 
 	/*
@@ -146,14 +131,5 @@ public class Constants {
 		public static final double INDEXER_INDEX_SPEED=600;
 		public static final double INDEXER_SORT_SPEED=200;
 		public static final double INDEXER_REVERSE_SPEED=-600;
-	}
-
-	/*
-	 * Sorter Constants
-	 */
-	public static final class Sorter {
-		public static final String SORTER_ID = "sorter";
-		public static final double SORTER_EXTEND=0.38; //Extended (sort) position
-		public static final double SORTER_RETRACT=0.497; //Retracted (home) position
 	}
 }

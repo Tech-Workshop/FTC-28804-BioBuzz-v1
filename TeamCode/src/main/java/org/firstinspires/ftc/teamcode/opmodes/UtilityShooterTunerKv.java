@@ -20,9 +20,9 @@ public class UtilityShooterTunerKv extends OpMode {
 
 	@Override
 	public void init() {
-		shooter = hardwareMap.get(DcMotorEx.class, Constants.Shooter.SHOOTER_POLLEN_ID);
+		shooter = hardwareMap.get(DcMotorEx.class, Constants.Shooter.SHOOTER_ID);
 		shooter.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-		shooter.setDirection(Constants.Shooter.SHOOTER_POLLEN_DIRECTION);
+		shooter.setDirection(Constants.Shooter.SHOOTER_DIRECTION);
 	}
 
 	@Override

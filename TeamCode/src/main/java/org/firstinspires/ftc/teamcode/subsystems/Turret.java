@@ -1,32 +1,25 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.ServoImplEx;
 import com.qualcomm.robotcore.hardware.PwmControl;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Constants;
-import org.firstinspires.ftc.teamcode.Constants.General.Ball;
 import org.firstinspires.ftc.teamcode.Robot;
 
 public class Turret {
-	private final ServoImplEx turretServo;
+	private final ServoImplEx turretLeftServo,turretRightServo;
 	private final Telemetry telemetry;
 	private final Constants.General.Alliance alliance;
 	private Robot robot;
 
-	public Turret(HardwareMap hardwareMap, Telemetry telemetry, Ball ballType, Constants.General.Alliance alliance) {
-		//Nectar
-		if(ballType==Ball.NECTAR) {
-			this.turretServo=hardwareMap.get(ServoImplEx.class, Constants.Turret.TURRET_NECTAR_ID);
-			turretServo.setPwmRange(new PwmControl.PwmRange(500, 2500));
+	public Turret(HardwareMap hardwareMap, Telemetry telemetry, Constants.General.Alliance alliance) {
+		this.turretLeftServo=hardwareMap.get(ServoImplEx.class, Constants.Turret.TURRET_LEFT_ID);
+		turretLeftServo.setPwmRange(new PwmControl.PwmRange(500, 2500));
 
-		//Pollen
-		} else {
-			this.turretServo=hardwareMap.get(ServoImplEx.class, Constants.Turret.TURRET_POLLEN_ID);
-			turretServo.setPwmRange(new PwmControl.PwmRange(500, 2500));
-		}
+		this.turretRightServo=hardwareMap.get(ServoImplEx.class, Constants.Turret.TURRET_RIGHT_ID);
+		turretRightServo.setPwmRange(new PwmControl.PwmRange(500, 2500));
 
 		this.alliance=alliance;
 		this.telemetry=telemetry;
@@ -37,23 +30,12 @@ public class Turret {
 
 	//Turn turret to specified degrees (0 deg=straight forward)
 	public void turnToDegrees(double degrees) {
-		/*
-			Servo 	Degrees
-				0		270
-				0.5	90
-				1.0	-90
-		 */
-
-		//telemetry.addData("Turn to degrees:",degrees);
-
-
 		//Normalize given angle
-	//	degrees = ((degrees % 360) + 360) % 360;
-		double position = (degrees + 85.0) / 350.0;
-		turretServo.setPosition(Math.max(0.0, Math.min(1.0, position)));
+		double position = (degrees + 85.0) / 350.0; //TODO: Get new calculation (normalize?)
+		turretLeftServo.setPosition(Math.max(0.0, Math.min(1.0, position)));
+		turretRightServo.setPosition(Math.max(0.0, Math.min(1.0, position)));
 
 		//telemetry.addData("--> servo position:",Math.max(0.0, Math.min(1.0, position)));
-
 	}
 
 	public void turnToTarget() {
@@ -87,13 +69,9 @@ public class Turret {
 
 		//Get robot angle to target
 		double targetAngle=angleToTarget(robot.drive.follower.pose().x(),robot.drive.follower.pose().y(),targetX,targetY);
-//telemetry.addData("Target Angle (deg)",targetAngle);
-
 
 		//Get adjusted robot heading
 		double robotAngle=Math.toDegrees(robot.drive.follower.pose().heading())-90;
-//telemetry.addData("Adjusted Robot Heading (deg)",robotAngle);
-//telemetry.addData("Turn to Degrees (deg)",targetAngle-robotAngle);
 
 		turnToDegrees(targetAngle-robotAngle);
 	}

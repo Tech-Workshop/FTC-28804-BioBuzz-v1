@@ -47,33 +47,21 @@ public class AutonBlue extends OpMode {
 		//TODO: Add mechanism actions inline below
 
 		return sequential(
-			instant(() -> robot.shooterPollen.spinFlywheel()),
+			instant(() -> robot.shooter.spinFlywheel()),
 			waitMs(500),
 			follow(robot.drive.follower, path1()),
 			waitMs(2000),
-			instant(() -> robot.shooterPollen.openGate()),
+			instant(() -> robot.shooter.openGate()),
 			instant(() -> robot.indexer.index()),
 			waitMs(3000),
 			instant(() -> robot.indexer.stop()),
-			instant(() -> robot.shooterPollen.closeGate()),
-			waitMs(500),
-			instant(() -> robot.indexer.sortSpeed()),
-			instant(() -> robot.sorter.sort()),
-			waitMs(2000),
-			instant(() -> robot.indexer.stop()),
-			instant(() -> robot.sorter.home()),
-			waitMs(2000),
-			instant(() -> robot.indexer.sortSpeed()),
-			instant(() -> robot.sorter.sort()),
-			waitMs(2000),
-			instant(() -> robot.indexer.stop()),
-			instant(() -> robot.sorter.home()),
+			instant(() -> robot.shooter.closeGate()),
 			waitMs(1000),
-			instant(() -> robot.shooterPollen.openGate()),
+			instant(() -> robot.shooter.openGate()),
 			instant(() -> robot.indexer.index()),
 			waitMs(3000),
-			instant(() -> robot.shooterPollen.stopFlywheel()),
-			instant(() -> robot.shooterPollen.closeGate()),
+			instant(() -> robot.shooter.stopFlywheel()),
+			instant(() -> robot.shooter.closeGate()),
 			instant(() -> robot.indexer.stop()),
 			waitMs(2000),
 			follow(robot.drive.follower, path2()),
@@ -89,32 +77,18 @@ public class AutonBlue extends OpMode {
 		robot.init(hardwareMap, telemetry, start, org.firstinspires.ftc.teamcode.Constants.General.Alliance.RED);
 
 		//Initialize servo positions
-		robot.shooterNectar.closeGate();
-		robot.shooterPollen.closeGate();
-		robot.turretNectar.turnToDegrees(0.0);
-		robot.turretPollen.turnToDegrees(0.0);
-		robot.sorter.home();
+		robot.shooter.closeGate();
+		robot.turret.turnToDegrees(0.0);
 
 		telemetry.addLine("Retract arm -- START --");
 		telemetry.update();
 
-		robot.intake.retractArm();
-		while(!robot.intake.isArmDone()) {
-			telemetry.addData("Retract arm pos:",robot.intake.getArmPosition());
-			telemetry.update();
-
-			robot.intake.armPeriodic();
-		}
-
 		telemetry.addLine("Retract arm -- END --");
 		telemetry.update();
-
 	}
 
 	@Override
 	public void start() {
-		robot.intake.extendArm();
-
 		//Schedule autonomous routine
 		schedule(autoRoutine());
 	}
@@ -125,8 +99,8 @@ public class AutonBlue extends OpMode {
 		Scheduler.execute();
 
 		//Periodic
-		robot.intake.armPeriodic();
-		robot.shooterPollen.periodic();
+		robot.ramp.periodic();
+		robot.shooter.periodic();
 
 		//Save pose
 		PoseStorage.currentPose = robot.drive.follower.pose();
