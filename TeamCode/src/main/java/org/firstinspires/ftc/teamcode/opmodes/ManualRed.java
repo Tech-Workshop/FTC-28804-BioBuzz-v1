@@ -3,10 +3,14 @@ package org.firstinspires.ftc.teamcode.opmodes;
 import com.pedropathing.math.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Constants;
 import org.firstinspires.ftc.teamcode.Robot;
+import org.firstinspires.ftc.teamcode.subsystems.Ramp;
 import org.firstinspires.ftc.teamcode.utility.PoseStorage;
 
 @TeleOp(name="RED-Manual")
@@ -19,12 +23,16 @@ public class ManualRed extends LinearOpMode {
 	ElapsedTime shooterDelay=new ElapsedTime();
 	ElapsedTime intakeTimer=new ElapsedTime();
 
-	boolean intakeFlag=false,shooterFlag=false;
+	boolean intakeFlag=false,shooterFlag=false,rampMoving=false;
 
 	Pose defaultStart=new Pose(57.0,10.0,Math.toRadians(90.0));
 
+	Gamepad gamepad1Prev = new Gamepad();
+	Gamepad gamepad2Prev = new Gamepad();
+
 	@Override
 	public void runOpMode() throws InterruptedException {
+
 		//Retrieve end pose from auton
 		if(PoseStorage.currentPose!=null) {
 			defaultStart= PoseStorage.currentPose;
@@ -34,8 +42,10 @@ public class ManualRed extends LinearOpMode {
 		robot.init(hardwareMap, telemetry, defaultStart, Constants.General.Alliance.RED);
 
 		//Initialize servo positions
+		/*
 		robot.shooter.closeGate();
 		robot.turret.turnToDegrees(0.0);
+		*/
 
 		waitForStart();
 
@@ -89,6 +99,28 @@ public class ManualRed extends LinearOpMode {
 			}
 
 			//------------------------------------------
+			//FLOWER RAMP
+
+			if(gamepad1.dpad_up && !gamepad1Prev.dpad_up) {
+				if(robot.ramp.getStatus()!= Ramp.RAMP_STATUS.UP) {
+					robot.ramp.raise();
+					rampMoving=true;
+				}
+			} else if(gamepad1.dpad_down && !gamepad1Prev.dpad_down) {
+				if(robot.ramp.getStatus()!= Ramp.RAMP_STATUS.DOWN) {
+					robot.ramp.lower();
+					rampMoving=true;
+				}
+			}
+
+			if(rampMoving) {
+				robot.ramp.periodic();
+				if(robot.ramp.getStatus()!=Ramp.RAMP_STATUS.MOVING) {
+					rampMoving=false;
+				}
+			}
+
+			//------------------------------------------
 			//SHOOTERS
 
 			//Shoot Pollen
@@ -123,13 +155,15 @@ public class ManualRed extends LinearOpMode {
 				disableTurrets=true;
 			}
 
+			/*
 			if(!disableTurrets) {
 				robot.turret.turnToTarget();
 			}
+			*/
 
 			//Run periodic methods
-			robot.ramp.periodic();
-			robot.shooter.periodic();
+			//robot.ramp.periodic();
+			//robot.shooter.periodic();
 
 			//------------------------------------------
 			//Telemetry
@@ -138,6 +172,10 @@ public class ManualRed extends LinearOpMode {
 			telemetry.addData("PP (heading-deg)",Math.toDegrees(robot.drive.follower.pose().heading()));
 
 			telemetry.update();
+
+			//Save state of gamepad (to detect initial button presses)
+			gamepad1Prev=gamepad1;
+			gamepad2Prev=gamepad2;
 		}
 	}
 }

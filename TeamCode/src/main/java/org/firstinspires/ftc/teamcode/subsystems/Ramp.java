@@ -13,7 +13,7 @@ public class Ramp {
 	private double rampPos; //Note this is for right only, left is inverse (1-armPos)
 	private double rampTarget=-1.0; //Purposely a bad value to start, also for right only
 
-	enum RAMP_STATUS {
+	public enum RAMP_STATUS {
 		UNKNOWN,
 		UP,
 		DOWN,
@@ -62,8 +62,13 @@ public class Ramp {
 	public double getPosition() {
 		return rampPos;
 	}
+
 	public double getTarget() {
 		return rampTarget;
+	}
+
+	public RAMP_STATUS getStatus() {
+		return rampStatus;
 	}
 
 	public boolean isDone() {
