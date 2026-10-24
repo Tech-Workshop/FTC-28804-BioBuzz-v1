@@ -47,6 +47,15 @@ public class Constants {
 	public static final class Sensors {
 		//Pinpoint Odometry Computer
 		public static final String ODOMETRY_ID = "pinpoint";
+
+		//Beam Break Receiver
+		public static final String BEAM_BREAK_ID = "beam_break";
+
+		//LED Indicator Lights
+		public static final String LED_LEFT_GREEN_ID = "led_left_green";
+		public static final String LED_LEFT_RED_ID = "led_left_red";
+		public static final String LED_RIGHT_GREEN_ID = "led_right_green";
+		public static final String LED_RIGHT_RED_ID = "led_right_red";
 	}
 
 	/*
@@ -78,10 +87,12 @@ public class Constants {
 	 */
 	public static final class Intake {
 		public static final String INTAKE_ID = "intake";
-		public static final DcMotorSimple.Direction INTAKE_DIRECTION = DcMotorSimple.Direction.REVERSE;
+		public static final DcMotorSimple.Direction INTAKE_DIRECTION = DcMotorSimple.Direction.FORWARD;
 
 		public static final double INTAKE_IN_SPEED=1200;
 		public static final double INTAKE_OUT_SPEED=-1000;
+
+		public static final double INTAKE_EXPEL_TIME=1.5; //Seconds to expel after intake button is released
 	}
 
 	/*
@@ -91,8 +102,8 @@ public class Constants {
 		public static final String RAMP_LEFT_ID = "ramp_left"; //Axon Max
 		public static final String RAMP_RIGHT_ID = "ramp_right"; //Axon Max
 
-		public static final double RAMP_UP_POS=0.50; //Note, this is the position for both since it is exactly the middle
-		public static final double RAMP_DOWN_POS=0.17; //Note, this is for right servo only (left is opposite 1.0-0.17=0.83)
+		public static final double RAMP_UP_POS=0.176; //Note, this is the position for both since it is exactly the middle
+		public static final double RAMP_DOWN_POS=0.69; //Note, this is for right servo only (left is opposite 1.0-0.17=0.83)
 		public static final double RAMP_INCREMENT=0.01; //Note, values above must exactly match (n)*increment
 	}
 
@@ -101,16 +112,23 @@ public class Constants {
 	 */
 	public static final class Shooter {
 		public static final String SHOOTER_ID = "shooter";
-		public static final DcMotorSimple.Direction SHOOTER_DIRECTION = DcMotorSimple.Direction.FORWARD;
+		public static final DcMotorSimple.Direction SHOOTER_DIRECTION = DcMotorSimple.Direction.REVERSE;
+
+		public static final String SHOOTER_COUNTER_ID = "shooter_counter";
+		public static final DcMotorSimple.Direction SHOOTER_COUNTER_DIRECTION = DcMotorSimple.Direction.REVERSE;
+
+		public static final String HOOD_ID = "hood";
+		public static final double HOOD_MIN=0.68; //Minimum down position
+		public static final double HOOD_MAX=0.26; //Maximum up position
 
 		public static final double SHOOTER_PID_kS=0.05,SHOOTER_PID_kV=0.00034,SHOOTER_PID_kP=0.0009;
 		public static final double SHOOTER_RAMP_RATE=0.20;
 
 		public static final double SHOOTER_VELOCITY=2100; //Speed for pollen ball shot (1900)
 
-		public static final String BALLSTOP_ID = "ballstop_nectar"; //Axon Max+
-		public static final double BALLSTOP_BLOCK=0.63; //Minimum down position
-		public static final double BALLSTOP_CLEAR=0.42; //Maximum up position
+		public static final String BALLSTOP_ID = "ball_stop"; //Axon Max+
+		public static final double BALLSTOP_BLOCK=0.360; //Minimum down position
+		public static final double BALLSTOP_CLEAR=0.470; //Maximum up position
 	}
 
 	/*
@@ -119,6 +137,9 @@ public class Constants {
 	public static final class Turret {
 		public static final String TURRET_LEFT_ID = "turret_left";
 		public static final String TURRET_RIGHT_ID = "turret_right";
+
+		public static final double TURRET_MIN=0.07;
+		public static final double TURRET_MAX=1.00;
 	}
 
 	/*
@@ -126,10 +147,10 @@ public class Constants {
 	 */
 	public static final class Indexer {
 		public static final String INDEXER_ID = "indexer";
-		public static final DcMotorSimple.Direction INDEXER_DIRECTION = DcMotorSimple.Direction.FORWARD;
+		public static final DcMotorSimple.Direction INDEXER_DIRECTION = DcMotorSimple.Direction.REVERSE;
 
-		public static final double INDEXER_INDEX_SPEED=600;
-		public static final double INDEXER_SORT_SPEED=200;
-		public static final double INDEXER_REVERSE_SPEED=-600;
+		public static final double INDEXER_INTAKE_SPEED=400;
+		public static final double INDEXER_SHOOT_SPEED=600;
+		public static final double INDEXER_REVERSE_SPEED=-400;
 	}
 }

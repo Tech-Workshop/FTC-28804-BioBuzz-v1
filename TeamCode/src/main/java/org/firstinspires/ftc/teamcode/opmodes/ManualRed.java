@@ -17,7 +17,9 @@ public class ManualRed extends LinearOpMode {
 	boolean disableTurrets=false;
 
 	ElapsedTime shooterDelay=new ElapsedTime();
-	boolean shooterFlag=false;
+	ElapsedTime intakeTimer=new ElapsedTime();
+
+	boolean intakeFlag=false,shooterFlag=false;
 
 	Pose defaultStart=new Pose(57.0,10.0,Math.toRadians(90.0));
 
@@ -64,31 +66,26 @@ public class ManualRed extends LinearOpMode {
 			//Intake
 			if(gamepad2.right_trigger>=Constants.General.CONTROLLER_DEADBAND) {
 				robot.intake.intake();
-				robot.indexer.sortSpeed(); //NEW
+				robot.indexer.intakeSpeed();
+				intakeFlag=true;
 
 				//Expel
 			} else if(gamepad2.right_bumper) {
 				robot.intake.expel();
+				intakeFlag=false;
 
 				//Stop
 			} else {
-				robot.intake.stop();
-			}
+				if(intakeFlag) {
+					intakeTimer.reset();
+					intakeFlag=false;
+				}
 
-			//------------------------------------------
-			//INDEXER
-
-			//Index
-			if(gamepad2.left_trigger>=Constants.General.CONTROLLER_DEADBAND) {
-				robot.indexer.index();
-
-				//Expel
-			} else if(gamepad2.left_bumper) {
-				robot.indexer.reverse();
-
-				//Stop
-			} else {
-				robot.indexer.stop();
+				if(intakeTimer.time()<Constants.Intake.INTAKE_EXPEL_TIME) {
+					robot.intake.expel();
+				} else {
+					robot.intake.stop();
+				}
 			}
 
 			//------------------------------------------
@@ -105,7 +102,7 @@ public class ManualRed extends LinearOpMode {
 					//Spun up - open gate and index
 				} else if(shooterDelay.time()>0.5 && robot.shooter.speedWithinError()) {
 					robot.shooter.openGate();
-					robot.indexer.index();
+					robot.indexer.shootSpeed();
 					telemetry.addLine("Opened gate");
 				}
 

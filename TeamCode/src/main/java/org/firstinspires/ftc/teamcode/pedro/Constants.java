@@ -39,10 +39,10 @@ public class Constants {
     public static PinpointConfig localizerConfig = new PinpointConfig(c -> {
         c.name.set("pinpoint");
         c.podType.set(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
-        c.xPodOffset.set(6.778); //Forward/Back pod - how far to side of center? (left is positive)
-        c.yPodOffset.set(2.218); //Strafe pod - how far forward/back of center? (forward is positive)
+        c.xPodOffset.set(5.8575); //Forward/Back pod - how far to side of center? (left is positive)
+        c.yPodOffset.set(-1.0705); //Strafe pod - how far forward/back of center? (forward is positive)
         c.xPodDirection.set(GoBildaPinpointDriver.EncoderDirection.REVERSED); //xPod=Forward/Back - Should show positive numbers when bot pushed forward
-        c.yPodDirection.set(GoBildaPinpointDriver.EncoderDirection.FORWARD); //yPod=Strafe - Should show positive when bot pushed left
+        c.yPodDirection.set(GoBildaPinpointDriver.EncoderDirection.REVERSED); //yPod=Strafe - Should show positive when bot pushed left
         c.globalDistanceUnit.set(DistanceUnit.INCH);
         c.offsetUnits.set(DistanceUnit.INCH);
     });

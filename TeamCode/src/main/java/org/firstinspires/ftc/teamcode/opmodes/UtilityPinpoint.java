@@ -45,12 +45,12 @@ public class UtilityPinpoint extends LinearOpMode {
 		 *  The Y pod offset refers to how far forwards from the tracking point the Y (strafe) odometry pod is.
 		 *  Forward of center is a positive number, backwards is a negative number.
 		 */
-		pinpoint.setOffsets(6.778, 2.218, DistanceUnit.INCH); //these are tuned for 3110-0002-0001 Product Insight #1
+		pinpoint.setOffsets(5.8575, -1.0705, DistanceUnit.INCH); //these are tuned for 3110-0002-0001 Product Insight #1
 
 		pinpoint.setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods.goBILDA_4_BAR_POD);
 
 		pinpoint.setEncoderDirections(GoBildaPinpointDriver.EncoderDirection.REVERSED,
-			GoBildaPinpointDriver.EncoderDirection.FORWARD);
+			GoBildaPinpointDriver.EncoderDirection.REVERSED);
 
 		pinpoint.resetPosAndIMU();
 	}

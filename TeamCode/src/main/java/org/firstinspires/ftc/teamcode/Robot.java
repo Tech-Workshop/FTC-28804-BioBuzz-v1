@@ -5,13 +5,12 @@ import com.pedropathing.math.Pose;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
-import org.firstinspires.ftc.teamcode.Constants.General.Ball;
 import org.firstinspires.ftc.teamcode.subsystems.Drive;
 import org.firstinspires.ftc.teamcode.subsystems.Indexer;
 import org.firstinspires.ftc.teamcode.subsystems.Intake;
 import org.firstinspires.ftc.teamcode.subsystems.Ramp;
+import org.firstinspires.ftc.teamcode.subsystems.Sensors;
 import org.firstinspires.ftc.teamcode.subsystems.Shooter;
-import org.firstinspires.ftc.teamcode.subsystems.Sorter;
 import org.firstinspires.ftc.teamcode.subsystems.Turret;
 
 public class Robot {
@@ -22,6 +21,7 @@ public class Robot {
 	public Shooter shooter;
 	public Turret turret;
 	public Ramp ramp;
+	public Sensors sensors;
 
 	//Global variables
 	public Telemetry telemetry;
@@ -48,5 +48,6 @@ public class Robot {
 		this.shooter=new Shooter(hardwareMap,telemetry);
 		this.turret=new Turret(hardwareMap,telemetry,alliance);
 		this.ramp=new Ramp(hardwareMap,telemetry);
+		this.sensors=new Sensors(hardwareMap,telemetry);
 	}
 }

@@ -19,12 +19,12 @@ public class Indexer {
 		this.telemetry=telemetry;
 	}
 
-	public void index() {
-		indexerMotor.setVelocity(Constants.Indexer.INDEXER_INDEX_SPEED);
+	public void shootSpeed() {
+		indexerMotor.setVelocity(Constants.Indexer.INDEXER_SHOOT_SPEED);
 	}
 
-	public void sortSpeed() {
-		indexerMotor.setVelocity(Constants.Indexer.INDEXER_SORT_SPEED);
+	public void intakeSpeed() {
+		indexerMotor.setVelocity(Constants.Indexer.INDEXER_INTAKE_SPEED);
 	}
 
 	public void reverse() {
