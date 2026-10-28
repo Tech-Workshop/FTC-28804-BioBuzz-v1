@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.opmodes;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 
 import org.firstinspires.ftc.teamcode.Constants;
@@ -19,8 +20,13 @@ public class UtilityMotors extends LinearOpMode {
 
 		shooter = hardwareMap.get(DcMotorEx.class, Constants.Shooter.SHOOTER_ID);
 		shooter.setDirection(Constants.Shooter.SHOOTER_DIRECTION);
+		shooter.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+		shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
 		shooterCounter = hardwareMap.get(DcMotorEx.class, Constants.Shooter.SHOOTER_COUNTER_ID);
 		shooterCounter.setDirection(Constants.Shooter.SHOOTER_COUNTER_DIRECTION);
+		shooterCounter.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+		shooterCounter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
 		intake = hardwareMap.get(DcMotorEx.class, Constants.Intake.INTAKE_ID);
 		intake.setDirection(Constants.Intake.INTAKE_DIRECTION);
@@ -44,15 +50,19 @@ public class UtilityMotors extends LinearOpMode {
 			}
 
 			if(gamepad1.b) {
-				shooter.setPower(0.75);
+				shooter.setVelocity(1450);
+				//shooter.setPower(0.75);
 			} else {
-				shooter.setPower(0.0);
+				shooter.setVelocity(0);
+				//shooter.setPower(0.0);
 			}
 
 			if(gamepad1.x) {
-				shooterCounter.setPower(0.80);
+				shooterCounter.setVelocity(800);
+				//shooterCounter.setPower(0.80);
 			} else {
-				shooterCounter.setPower(0.0);
+				shooterCounter.setVelocity(0);
+				//shooterCounter.setPower(0.0);
 			}
 
 			if(gamepad1.right_bumper) {
@@ -66,6 +76,12 @@ public class UtilityMotors extends LinearOpMode {
 			} else {
 				indexer.setPower(0.0);
 			}
+
+			telemetry.addData("Shooter Velocity:",shooter.getVelocity());
+			telemetry.addData("Counter Velocity:",shooterCounter.getVelocity());
+			telemetry.addData("Intake Velocity",intake.getVelocity());
+			telemetry.addData("Indexer Velocity",indexer.getVelocity());
+			telemetry.update();
 		}
 	}
 }

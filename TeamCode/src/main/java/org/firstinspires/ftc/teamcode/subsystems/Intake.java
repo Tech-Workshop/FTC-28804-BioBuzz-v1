@@ -15,6 +15,7 @@ public class Intake {
 	public Intake(HardwareMap hardwareMap, Telemetry telemetry) {
 		this.intakeMotor=hardwareMap.get(DcMotorEx.class, Constants.Intake.INTAKE_ID);
 		intakeMotor.setDirection(Constants.Intake.INTAKE_DIRECTION);
+		intakeMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 		intakeMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
 		this.telemetry=telemetry;

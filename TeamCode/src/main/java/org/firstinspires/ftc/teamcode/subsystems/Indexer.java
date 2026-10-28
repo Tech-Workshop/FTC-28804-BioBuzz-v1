@@ -14,6 +14,7 @@ public class Indexer {
 	public Indexer(HardwareMap hardwareMap, Telemetry telemetry) {
 		this.indexerMotor=hardwareMap.get(DcMotorEx.class, Constants.Indexer.INDEXER_ID);
 		indexerMotor.setDirection(Constants.Indexer.INDEXER_DIRECTION);
+		indexerMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 		indexerMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
 		this.telemetry=telemetry;

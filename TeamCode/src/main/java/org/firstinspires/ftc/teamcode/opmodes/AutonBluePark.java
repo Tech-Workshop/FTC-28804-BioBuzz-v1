@@ -26,7 +26,7 @@ public class AutonBluePark extends OpMode {
 	private final PoseFactory poseFactory = PoseFactory.degrees();
 
 	private final Pose start = translateRedPoseToBlue(poseFactory.of(9.8, 131.5, 0));
-	private final Pose path1 = translateRedPoseToBlue(poseFactory.of(10.5, 119, 0));
+	private final Pose path1 = translateRedPoseToBlue(poseFactory.of(15, 119, 0));
 
 	public Path path1() {
 		return line(start, path1).linear(start, path1);
@@ -45,11 +45,13 @@ public class AutonBluePark extends OpMode {
 		Scheduler.reset();
 
 		//Initialize robot hardware
-		robot.init(hardwareMap, telemetry, start, org.firstinspires.ftc.teamcode.Constants.General.Alliance.BLUE);
+		//robot.init(hardwareMap, telemetry, start, org.firstinspires.ftc.teamcode.Constants.General.Alliance.BLUE);
+		robot.init(hardwareMap, telemetry, start, "BLUE");
 
 		//Initialize servo positions
 		robot.shooter.closeGate();
-		robot.turret.turnToDegrees(0.0);
+		robot.ramp.initializeUp();
+		//robot.turret.turnToDegrees(0.0);
 
 		telemetry.addLine("Retract arm -- START --");
 		telemetry.update();

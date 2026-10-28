@@ -16,16 +16,18 @@ import org.firstinspires.ftc.teamcode.pedro.Constants;
 public class Drive {
 	public Follower follower; //Pedropathing follower
 	private final Telemetry telemetry;
-	private final org.firstinspires.ftc.teamcode.Constants.General.Alliance alliance;
+	//private final org.firstinspires.ftc.teamcode.Constants.General.Alliance alliance;
+	private String thisAlliance;
 
 	public double cacheX,cacheY,cacheHeading,cacheSpeed,cacheT;
 
-	public Drive(HardwareMap hardwareMap, Telemetry telemetry, Pose startPose, org.firstinspires.ftc.teamcode.Constants.General.Alliance alliance) {
+	//public Drive(HardwareMap hardwareMap, Telemetry telemetry, Pose startPose, org.firstinspires.ftc.teamcode.Constants.General.Alliance alliance) {
+	public Drive(HardwareMap hardwareMap, Telemetry telemetry, Pose startPose, String alliance) {
 		this.follower= Constants.create(hardwareMap);
 		follower.setPose(startPose);
 		follower.update();
 
-		this.alliance=alliance;
+		this.thisAlliance=alliance;
 		this.telemetry = telemetry;
 	}
 
@@ -39,10 +41,17 @@ public class Drive {
 	}
 
 	/**
-	 * Teleop drive method
-	 *
-	 * @param gamepad1 Driver gamepad
+	 * Save location information to cache
 	 */
+	public void setAlliance(String alliance) {
+		thisAlliance=alliance;
+	}
+
+		/**
+		 * Teleop drive method
+		 *
+		 * @param gamepad1 Driver gamepad
+		 */
 	public void drive(Gamepad gamepad1) {
 		//Check for low-speed mode
 		double SPEED_MULTIPLIER = DRIVE_SPEED;
@@ -52,8 +61,14 @@ public class Drive {
 
 		DrivePowers powers;
 
+		telemetry.addData("alliance",thisAlliance);
+		telemetry.addData("heading",Math.toDegrees(follower.pose().heading()));
+		telemetry.update();
+
+
 		//Driving from Blue Alliance
-		if(alliance== org.firstinspires.ftc.teamcode.Constants.General.Alliance.BLUE) {
+		//if(alliance== org.firstinspires.ftc.teamcode.Constants.General.Alliance.BLUE) {
+		if(thisAlliance == "BLUE") {
 			powers = ManualDrive.fieldCentric(
 				gamepad1.left_stick_y * SPEED_MULTIPLIER, //Default is (-)
 				gamepad1.left_stick_x * SPEED_MULTIPLIER,

@@ -28,12 +28,16 @@ public class Turret {
 		robot = Robot.getInstance();
 	}
 
+	public void turnToZero() {
+		turretLeftServo.setPosition(Constants.Turret.TURRET_ZERO_POS);
+	}
+
 	//Turn turret to specified degrees (0 deg=straight forward)
 	public void turnToDegrees(double degrees) {
 		//Normalize given angle
 		double position = (degrees + 85.0) / 350.0; //TODO: Get new calculation (normalize?)
 		turretLeftServo.setPosition(Math.max(0.0, Math.min(1.0, position)));
-		turretRightServo.setPosition(Math.max(0.0, Math.min(1.0, position)));
+		//TODO: turretRightServo.setPosition(Math.max(0.0, Math.min(1.0, position)));
 
 		//telemetry.addData("--> servo position:",Math.max(0.0, Math.min(1.0, position)));
 	}

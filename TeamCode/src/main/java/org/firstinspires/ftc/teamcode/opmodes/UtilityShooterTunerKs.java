@@ -8,7 +8,6 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 
 import org.firstinspires.ftc.teamcode.Constants;
 
-@Disabled
 @TeleOp(group = "UTILITY",name="Utility: Shooter kS")
 public class UtilityShooterTunerKs extends OpMode {
 
@@ -19,7 +18,7 @@ public class UtilityShooterTunerKs extends OpMode {
 
 	@Override
 	public void init() {
-		shooter = hardwareMap.get(DcMotorEx.class, Constants.Shooter.SHOOTER_ID);
+		shooter = hardwareMap.get(DcMotorEx.class, Constants.Shooter.SHOOTER_COUNTER_ID);
 		shooter.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 		shooter.setDirection(Constants.Shooter.SHOOTER_DIRECTION);
 	}

@@ -44,13 +44,13 @@ public class UtilityServo extends LinearOpMode {
 			//Turret - Tuning
 			if (gamepad1.dpad_right) {
 				if (turretPos < 1.0) {
-					turretPos+=0.001;
+					turretPos+=0.0001;
 					turretLeft.setPosition(turretPos);
 					//turretRight.setPosition(turretPos);
 				}
 			} else if (gamepad1.dpad_left) {
 				if (turretPos > 0.0) {
-					turretPos-=0.001;
+					turretPos-=0.0001;
 					turretLeft.setPosition(turretPos);
 					//turretRight.setPosition(turretPos);
 				}
@@ -99,13 +99,13 @@ public class UtilityServo extends LinearOpMode {
 			//Ramp - Tuning
 			if (gamepad1.right_trigger>0.05) {
 				if (rampPos < 1.0) {
-					rampPos+=0.001;
+					rampPos+=0.0002;
 					rampLeft.setPosition(rampPos);
 					rampRight.setPosition(rampPos);
 				}
 			} else if (gamepad1.left_trigger>0.05) {
 				if (rampPos > 0.0) {
-					rampPos-=0.001;
+					rampPos-=0.0002;
 					rampLeft.setPosition(rampPos);
 					rampRight.setPosition(rampPos);
 				}

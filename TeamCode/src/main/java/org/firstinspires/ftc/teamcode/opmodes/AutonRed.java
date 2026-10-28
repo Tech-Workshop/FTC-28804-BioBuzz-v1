@@ -23,10 +23,10 @@ public class AutonRed extends OpMode {
 	private final Robot robot = Robot.getInstance();
 	private final PoseFactory poseFactory = PoseFactory.degrees();
 
-	private final Pose start = poseFactory.of(57, 10, 90);
-	private final Pose path1 = poseFactory.of(57, 14, 90);
-	private final Pose point2 = poseFactory.of(28.5238, 38.1122, 90);
-	private final Pose point3 = poseFactory.of(10.8656, 90.5136, 0);
+	private final Pose start = poseFactory.of(57.0, 10.0, 90.0);
+	private final Pose path1 = poseFactory.of(61.0, 14.0, 90.0);
+	private final Pose point2 = poseFactory.of(28.5238, 38.1122, 90.0);
+	private final Pose park = poseFactory.of(15.0, 93.0, 0.0);
 
 	public Path path1() {
 		return line(start, path1).linear(start, path1);
@@ -37,7 +37,7 @@ public class AutonRed extends OpMode {
 	}
 
 	public Path path3() {
-		return line(point2, point3).linear(point2, point3);
+		return line(point2, park).linear(point2, park);
 	}
 
 	private Command autoRoutine() {
@@ -45,22 +45,18 @@ public class AutonRed extends OpMode {
 
 		return sequential(
 			instant(() -> robot.shooter.spinFlywheel()),
+			instant(() -> robot.shooter.spinCounter()),
 			waitMs(500),
 			follow(robot.drive.follower, path1()),
-			waitMs(2000),
+			waitMs(500),
 			instant(() -> robot.shooter.openGate()),
 			instant(() -> robot.indexer.shootSpeed()),
 			waitMs(3000),
 			instant(() -> robot.indexer.stop()),
 			instant(() -> robot.shooter.closeGate()),
-			waitMs(2000),
-			instant(() -> robot.shooter.openGate()),
-			instant(() -> robot.indexer.shootSpeed()),
-			waitMs(3000),
 			instant(() -> robot.shooter.stopFlywheel()),
-			instant(() -> robot.shooter.closeGate()),
-			instant(() -> robot.indexer.stop()),
-			waitMs(2000),
+			instant(() -> robot.shooter.stopCounter()),
+			waitMs(500),
 			follow(robot.drive.follower, path2()),
 			follow(robot.drive.follower, path3())
 		);
@@ -71,18 +67,15 @@ public class AutonRed extends OpMode {
 		Scheduler.reset();
 
 		//Initialize robot hardware
-		robot.init(hardwareMap, telemetry, start, org.firstinspires.ftc.teamcode.Constants.General.Alliance.RED);
+		//robot.init(hardwareMap, telemetry, start, org.firstinspires.ftc.teamcode.Constants.General.Alliance.RED);
+		robot.init(hardwareMap, telemetry, start, "RED");
 
 		//Initialize servo positions
 		robot.shooter.closeGate();
-		robot.turret.turnToDegrees(0.0);
+		robot.ramp.initializeUp();
+		//robot.turret.turnToDegrees(0.0);
 
-		telemetry.addLine("Retract arm -- START --");
 		telemetry.update();
-
-		telemetry.addLine("Retract arm -- END --");
-		telemetry.update();
-
 	}
 
 	@Override
@@ -99,6 +92,7 @@ public class AutonRed extends OpMode {
 		//Periodic
 		robot.ramp.periodic();
 		robot.shooter.periodic();
+		robot.ramp.periodic();
 
 		//Save pose
 		PoseStorage.currentPose = robot.drive.follower.pose();
