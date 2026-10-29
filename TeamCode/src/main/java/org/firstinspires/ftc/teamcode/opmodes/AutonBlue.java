@@ -70,7 +70,7 @@ public class AutonBlue extends OpMode {
 
 		//Initialize robot hardware
 		//robot.init(hardwareMap, telemetry, start, org.firstinspires.ftc.teamcode.Constants.General.Alliance.RED);
-		robot.init(hardwareMap, telemetry, start, "BLUE");
+		robot.init(hardwareMap, telemetry, start, org.firstinspires.ftc.teamcode.Constants.General.Alliance.BLUE);
 
 		//Initialize servo positions
 		robot.shooter.closeGate();

@@ -25,8 +25,8 @@ public class Robot {
 
 	//Global variables
 	public Telemetry telemetry;
-	//public Constants.General.Alliance alliance;
-	public String tAlliance;
+	public Constants.General.Alliance alliance;
+	//public String tAlliance;
 
 	private static Robot instance = null;
 	private boolean enabled; //Required for instance
@@ -39,12 +39,11 @@ public class Robot {
 		return instance;
 	}
 
-	//public void init(final HardwareMap hardwareMap, Telemetry telemetry, Pose startPose, Constants.General.Alliance alliance) {
-	public void init(final HardwareMap hardwareMap, Telemetry telemetry, Pose startPose, String alliance) {
-		this.tAlliance=alliance;
+	public void init(final HardwareMap hardwareMap, Telemetry telemetry, Pose startPose, Constants.General.Alliance alliance) {
+		this.alliance=alliance;
 
 		//Initialize all subsystems
-		this.drive=new Drive(hardwareMap,telemetry,(startPose==null ? new Pose(72.0,72.0) : startPose),tAlliance);
+		this.drive=new Drive(hardwareMap,telemetry,(startPose==null ? new Pose(72.0,72.0) : startPose),alliance);
 		this.intake=new Intake(hardwareMap,telemetry);
 		this.indexer=new Indexer(hardwareMap,telemetry);
 		this.shooter=new Shooter(hardwareMap,telemetry);

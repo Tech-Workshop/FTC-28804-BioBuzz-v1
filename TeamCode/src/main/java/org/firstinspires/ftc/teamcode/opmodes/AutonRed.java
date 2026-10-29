@@ -68,7 +68,7 @@ public class AutonRed extends OpMode {
 
 		//Initialize robot hardware
 		//robot.init(hardwareMap, telemetry, start, org.firstinspires.ftc.teamcode.Constants.General.Alliance.RED);
-		robot.init(hardwareMap, telemetry, start, "RED");
+		robot.init(hardwareMap, telemetry, start, org.firstinspires.ftc.teamcode.Constants.General.Alliance.RED);
 
 		//Initialize servo positions
 		robot.shooter.closeGate();

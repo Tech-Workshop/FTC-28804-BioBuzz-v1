@@ -1,8 +1,9 @@
+/*
 package org.firstinspires.ftc.teamcode.opmodes;
 
 import com.pedropathing.math.Pose;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -11,7 +12,8 @@ import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.subsystems.Ramp;
 import org.firstinspires.ftc.teamcode.utility.PoseStorage;
 
-public class ManualBaseTemp extends LinearOpMode {
+@Disabled
+public class XXXManualBaseTemp extends LinearOpMode {
 
 	private final Robot robot = Robot.getInstance();
 
@@ -30,7 +32,6 @@ public class ManualBaseTemp extends LinearOpMode {
 	//Alliance-specific
 	protected Constants.General.Alliance thisAlliance; //	protected Constants.General.Alliance thisAlliance=Constants.General.Alliance.UNKNOWN;
 	protected String tAlliance="BLUE";
-
 	//protected double poseHeadingOffset=0.0; //Offset heading in degrees
 	protected Pose defaultStart=new Pose(57.0,10.0,Math.toRadians(90.0));
 	protected Pose overridePose=new Pose(72.0, 72.0, Math.toRadians(180.0));
@@ -40,6 +41,9 @@ public class ManualBaseTemp extends LinearOpMode {
 
 	@Override
 	public void runOpMode() throws InterruptedException {
+
+		//TODO: Verify below works
+		updateSettings(); //Update alliance-specific settings
 
 		//Retrieve end pose from auton
 		if(PoseStorage.currentPose!=null) {
@@ -183,18 +187,14 @@ public class ManualBaseTemp extends LinearOpMode {
 			//Temp: Keep turret at zero
 			//robot.turret.turnToZero();
 
-			/*
 			if(gamepad2.back) {
 				robot.turret.turnToDegrees(0.0);
 				disableTurrets=true;
 			}
-			*/
 
-			/*
 			if(!disableTurrets) {
 				robot.turret.turnToTarget();
 			}
-			*/
 
 			//------------------------------------------
 			//Telemetry
@@ -211,3 +211,4 @@ public class ManualBaseTemp extends LinearOpMode {
 	}
 }
 
+*/

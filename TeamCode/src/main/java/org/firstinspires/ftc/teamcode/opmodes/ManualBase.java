@@ -28,9 +28,7 @@ public class ManualBase extends LinearOpMode {
 	Gamepad gamepad2Prev = new Gamepad();
 
 	//Alliance-specific
-	protected Constants.General.Alliance thisAlliance; //	protected Constants.General.Alliance thisAlliance=Constants.General.Alliance.UNKNOWN;
-	protected String tAlliance="RED";
-
+	protected Constants.General.Alliance thisAlliance=Constants.General.Alliance.UNKNOWN;
 	//protected double poseHeadingOffset=0.0; //Offset heading in degrees
 	protected Pose defaultStart=new Pose(57.0,10.0,Math.toRadians(90.0));
 	protected Pose overridePose=new Pose(72.0, 72.0, Math.toRadians(0.0));
@@ -41,6 +39,9 @@ public class ManualBase extends LinearOpMode {
 	@Override
 	public void runOpMode() throws InterruptedException {
 
+		//TODO: Verify below works
+		updateSettings(); //Update alliance-specific settings
+
 		//Retrieve end pose from auton
 		if(PoseStorage.currentPose!=null) {
 			defaultStart= PoseStorage.currentPose;
@@ -48,16 +49,16 @@ public class ManualBase extends LinearOpMode {
 
 		//Initialize robot hardware
 		//robot.init(hardwareMap, telemetry, defaultStart, thisAlliance);
-		robot.init(hardwareMap, telemetry, defaultStart, tAlliance);
+		robot.init(hardwareMap, telemetry, defaultStart, thisAlliance);
 
 		//Initialize servo positions
 		robot.shooter.closeGate();
 		//robot.turret.turnToZero();
 		//TODO: robot.ramp.initializeUp();
 
-		robot.drive.setAlliance(tAlliance);
+		//robot.drive.setAlliance(tAlliance);
 
-		telemetry.addData("alliance(1)=",tAlliance);
+		telemetry.addData("alliance(1)=",thisAlliance);
 		telemetry.update();
 
 		waitForStart();

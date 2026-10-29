@@ -19,8 +19,8 @@ public class Constants {
 
 		//Controller
 		public static final double CONTROLLER_DEADBAND=0.05;
+		public static final double CONTROLLER_AUTO_ERROR=Math.PI/10;
 		public static final boolean CONTROLLER_AUTO_HEADING=true;
-		public static final double CONTROLLER_AUTO_ERROR=Math.PI/12;  //Allowed error before auto correct
 
 		//Alliance types
 		public enum Alliance {
