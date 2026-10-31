@@ -133,8 +133,6 @@ public class Shooter {
 		// If currentVoltage < NOMINAL_VOLTAGE (e.g., 10.5V < 12.0V), factor > 1.0 -> faster speed
 		double factor = Constants.Shooter.NOMINAL_VOLTAGE / currentVoltage;
 
-
-
 		return baseVelocity * factor;
 	}
 
