@@ -27,6 +27,7 @@ public class Shooter {
 	private double rampRate=Constants.Shooter.SHOOTER_RAMP_RATE;
 	private double rampCounterRate=Constants.Shooter.SHOOTER_COUNTER_RAMP_RATE;
 	private double lastPower=0.0,lastCounterPower=0.0; //Used for power ramping
+	private double restingBatteryVoltage=Constants.Shooter.NOMINAL_VOLTAGE;
 
 	public Shooter(HardwareMap hardwareMap, Telemetry telemetry) {
 		this.hardwareMap = hardwareMap;
@@ -47,6 +48,12 @@ public class Shooter {
 		ballstopOpenPos=Constants.Shooter.BALLSTOP_CLEAR;
 
 		this.telemetry=telemetry;
+
+		//Initialize resting battery voltage
+		double initialVoltage = getRawBatteryVoltage();
+		if (initialVoltage > 0) {
+			this.restingBatteryVoltage = initialVoltage;
+		}
 	}
 
 	public void closeGate() {
@@ -107,7 +114,7 @@ public class Shooter {
 		return counterMotor.getVelocity();
 	}
 
-	public double getBatteryVoltage() {
+	public double getRawBatteryVoltage() {
 		double minVoltage = Double.MAX_VALUE;
 		if (hardwareMap != null && hardwareMap.voltageSensor != null) {
 			for (VoltageSensor sensor : hardwareMap.voltageSensor) {
@@ -118,6 +125,25 @@ public class Shooter {
 			}
 		}
 		return (minVoltage == Double.MAX_VALUE) ? Constants.Shooter.NOMINAL_VOLTAGE : minVoltage;
+	}
+
+	public void updateBatteryVoltage() {
+		double rawV = getRawBatteryVoltage();
+		if (rawV <= 0) return;
+
+		if (restingBatteryVoltage <= 0 || rawV > restingBatteryVoltage) {
+			restingBatteryVoltage = rawV;
+		} else if (targetVelocity == 0 && rawV >= 0.92 * restingBatteryVoltage) {
+			// Update resting voltage when shooter is idle and not under heavy motor sag
+			restingBatteryVoltage = 0.95 * restingBatteryVoltage + 0.05 * rawV;
+		}
+	}
+
+	public double getBatteryVoltage() {
+		if (restingBatteryVoltage <= 0) {
+			return getRawBatteryVoltage();
+		}
+		return restingBatteryVoltage;
 	}
 
 	public double getVoltageCompensatedVelocity(double baseVelocity) {
@@ -145,8 +171,11 @@ public class Shooter {
 	}
 
 	public void periodic() {
+		updateBatteryVoltage();
+
 		if (telemetry != null) {
-			telemetry.addData("Shooter Voltage", "%.2f V", getBatteryVoltage());
+			telemetry.addData("Shooter Rest Voltage", "%.2f V", getBatteryVoltage());
+			telemetry.addData("Shooter Raw Voltage", "%.2f V", getRawBatteryVoltage());
 		}
 
 		if(targetVelocity>0) {

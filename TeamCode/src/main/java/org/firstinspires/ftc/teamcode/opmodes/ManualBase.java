@@ -128,7 +128,8 @@ public class ManualBase extends LinearOpMode {
 				telemetry.addData("Shoot - target=",robot.shooter.getTargetVelocity());
 				telemetry.addData("Shoot - comp target=", "%.1f", robot.shooter.getCompensatedTargetVelocity());
 				telemetry.addData("Shoot - actual=",robot.shooter.getVelocity());
-				telemetry.addData("Shoot - voltage=", "%.2f V", robot.shooter.getBatteryVoltage());
+				telemetry.addData("Shoot - rest voltage=", "%.2f V", robot.shooter.getBatteryVoltage());
+				telemetry.addData("Shoot - raw voltage=", "%.2f V", robot.shooter.getRawBatteryVoltage());
 
 			} else if(shooterFlag) {
 				shooterFlag=false;
