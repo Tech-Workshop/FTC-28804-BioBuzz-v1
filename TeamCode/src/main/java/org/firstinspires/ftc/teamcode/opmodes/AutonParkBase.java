@@ -4,6 +4,8 @@ import static com.pedropathing.ivy.Scheduler.schedule;
 import static com.pedropathing.ivy.groups.Groups.sequential;
 import static com.pedropathing.ivy.pedro.PedroCommands.follow;
 
+import static org.firstinspires.ftc.teamcode.utility.PathUtility.translatePose;
+
 import com.pedropathing.api.PoseFactory;
 import com.pedropathing.ivy.Command;
 import com.pedropathing.ivy.Scheduler;
@@ -45,7 +47,7 @@ public class AutonParkBase extends OpMode {
 		Scheduler.reset(); //Reset Ivy scheduler
 
 		//Initialize robot hardware
-		robot.init(hardwareMap, telemetry, startPose, thisAlliance);
+		robot.init(hardwareMap, telemetry, translatePose(startPose,thisAlliance), thisAlliance);
 
 		//Initialize servo positions
 		robot.shooter.closeGate();

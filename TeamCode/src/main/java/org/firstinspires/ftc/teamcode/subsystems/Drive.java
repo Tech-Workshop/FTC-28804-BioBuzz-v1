@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.subsystems;
 
 import static org.firstinspires.ftc.teamcode.Constants.Drive.DRIVE_SPEED;
 import static org.firstinspires.ftc.teamcode.Constants.Drive.TURN_ERROR;
+import static org.firstinspires.ftc.teamcode.Constants.Drive.TURN_ERROR_FULL;
 import static org.firstinspires.ftc.teamcode.Constants.Drive.TURN_POWER_CLOSE;
 import static org.firstinspires.ftc.teamcode.Constants.Drive.TURN_POWER_FF;
 import static org.firstinspires.ftc.teamcode.Constants.Drive.TURN_POWER_MULTIPLIER;
@@ -43,6 +44,13 @@ public class Drive {
 	}
 
 	/**
+	 * Set heading target (at start of teleop opmode)
+	 */
+	public void setInitialHeadingTarget() {
+		this.headingTarget=follower.pose().heading();
+	}
+
+	/**
 	 * Save location information to cache
 	 */
 	public void setCache() {
@@ -71,7 +79,7 @@ public class Drive {
 			SPEED_MULTIPLIER *= 0.3;
 		}
 
-		double turnPower = -gamepad1.right_stick_x*TURN_POWER_MULTIPLIER*SPEED_MULTIPLIER;
+		//TODO: ORIGINAL TURN CODE -- double turnPower = -gamepad1.right_stick_x*TURN_POWER_MULTIPLIER*SPEED_MULTIPLIER;
 
 		DrivePowers powers;
 
@@ -79,8 +87,6 @@ public class Drive {
 		telemetry.addData("heading",Math.toDegrees(follower.pose().heading()));
 		//telemetry.update();
 
-
-		/*
 		double turnPower=0.0;
 		double headingCurrent=follower.pose().heading();
 
@@ -90,7 +96,6 @@ public class Drive {
 			headingTarget=headingCurrent;
 
 		} else{
-
 			//Get target heading if right analog stick is fully engaged
 			if (Math.sqrt(gamepad1.right_stick_x * gamepad1.right_stick_x + gamepad1.right_stick_y * gamepad1.right_stick_y) > 0.90) {
 				if(poseHeadingOffset==180.0) {
@@ -114,17 +119,19 @@ public class Drive {
 			//Calculate heading correction power (note error in radians)
 			if (Math.abs(headingError) < TURN_ERROR) {
 				turnPower = 0.0;
-			} else if (headingError > 1.5) {
+			} else if (headingError > TURN_ERROR_FULL) {
 				turnPower = 1;
-			} else if (headingError < -1.5) {
+			} else if (headingError < -TURN_ERROR_FULL) {
 				turnPower = -1;
 			} else {
-				turnPower = MathUtility.clamp((headingError / Math.PI) * TURN_POWER_CLOSE + (Math.signum(headingError) * TURN_POWER_FF), -1.0, 1.0);
+				turnPower = MathUtility.clamp(((headingError / TURN_ERROR_FULL) * TURN_POWER_CLOSE) + (Math.signum(headingError) * TURN_POWER_FF), -1.0, 1.0);
 			}
 
-			turnPower *= TURN_POWER_MULTIPLIER;
+			//turnPower *= TURN_POWER_MULTIPLIER;
+
+			telemetry.addData("headingError=",headingError);
+			telemetry.addData("turnPower=",turnPower);
 		}
-		*/
 
 		//Driving from Blue Alliance
 		if(alliance == org.firstinspires.ftc.teamcode.Constants.General.Alliance.BLUE) {

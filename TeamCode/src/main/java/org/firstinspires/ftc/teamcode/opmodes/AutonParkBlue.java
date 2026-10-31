@@ -7,6 +7,6 @@ import org.firstinspires.ftc.teamcode.Constants;
 public class AutonParkBlue extends AutonParkBase {
 	@Override
 	protected void updateSettings() {
-		thisAlliance = Constants.General.Alliance.RED;
+		thisAlliance = Constants.General.Alliance.BLUE;
 	}
 }

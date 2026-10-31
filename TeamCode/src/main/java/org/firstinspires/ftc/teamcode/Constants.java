@@ -76,7 +76,8 @@ public class Constants {
 		//Teleop Heading Correction
 		public static final double TURN_POWER_CLOSE = 1.0; //Power multiplier when within 1 radian (ORIG=1.0)
 		public static final double TURN_POWER_FF = 0.12; //Feedforward drive power when correcting small heading errors (ORIG=0.03)
-		public static final double TURN_ERROR = 0.06; //Allowed auto-turn error (teleop only)
+		public static final double TURN_ERROR = 0.05; //Allowed auto-turn error (teleop only)
+		public static final double TURN_ERROR_FULL=1.5; //When heading error above this threshold, full power (in radians)
 
 		//Strafing multiplier
 		public static final double STRAFE_MULTIPLIER = 1.2;
@@ -117,7 +118,7 @@ public class Constants {
 		public static final DcMotorSimple.Direction SHOOTER_DIRECTION = DcMotorSimple.Direction.REVERSE;
 		public static final double SHOOTER_PID_kS=0.14,SHOOTER_PID_kV=0.0003,SHOOTER_PID_kP=0.003;
 		public static final double SHOOTER_RAMP_RATE=0.20;
-		public static final double SHOOTER_VELOCITY=1450; //Speed for pollen shot
+		public static final double SHOOTER_VELOCITY=1480; //Speed for pollen shot
 
 		public static final String SHOOTER_COUNTER_ID = "shooter_counter";
 		public static final DcMotorSimple.Direction SHOOTER_COUNTER_DIRECTION = DcMotorSimple.Direction.REVERSE;

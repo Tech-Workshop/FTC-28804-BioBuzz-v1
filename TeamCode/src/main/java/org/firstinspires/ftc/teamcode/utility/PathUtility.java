@@ -18,4 +18,21 @@ public class PathUtility {
 
 		return line(start, end).linear(start, end);
 	}
+
+	public static Path linearPathWithSpeed(Pose start, Pose end, Constants.General.Alliance alliance,double speed) {
+		if(alliance==Constants.General.Alliance.BLUE) {
+			start = translateRedPoseToBlue(start);
+			end = translateRedPoseToBlue(end);
+		}
+
+		return line(start, end).linear(start, end).with(org.firstinspires.ftc.teamcode.pedro.Constants.foresightConfig.maxPathSpeed.at(speed));
+	}
+
+	public static Pose translatePose(Pose point, Constants.General.Alliance alliance) {
+		if(alliance==Constants.General.Alliance.BLUE) {
+			point = translateRedPoseToBlue(point);
+		}
+
+		return point;
+	}
 }

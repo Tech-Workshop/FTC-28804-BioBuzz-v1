@@ -1,25 +1,26 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
-import static com.pedropathing.api.Paths.line;
 import static com.pedropathing.ivy.Scheduler.schedule;
 import static com.pedropathing.ivy.commands.Commands.instant;
 import static com.pedropathing.ivy.commands.Commands.waitMs;
 import static com.pedropathing.ivy.groups.Groups.sequential;
 import static com.pedropathing.ivy.pedro.PedroCommands.follow;
 
+import static org.firstinspires.ftc.teamcode.utility.PathUtility.translatePose;
+
 import com.pedropathing.api.PoseFactory;
 import com.pedropathing.ivy.Command;
 import com.pedropathing.ivy.Scheduler;
 import com.pedropathing.math.Pose;
 import com.pedropathing.paths.Path;
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
+import org.firstinspires.ftc.teamcode.Constants;
 import org.firstinspires.ftc.teamcode.Robot;
+import org.firstinspires.ftc.teamcode.utility.PathUtility;
 import org.firstinspires.ftc.teamcode.utility.PoseStorage;
 
-@Autonomous(name="RED-Auton", preselectTeleOp = "RED-Manual")
-public class AutonRed extends OpMode {
+public class AutonDefaultBase extends OpMode {
 	private final Robot robot = Robot.getInstance();
 	private final PoseFactory poseFactory = PoseFactory.degrees();
 
@@ -29,15 +30,13 @@ public class AutonRed extends OpMode {
 	private final Pose park = poseFactory.of(15.0, 93.0, 0.0);
 
 	public Path path1() {
-		return line(start, path1).linear(start, path1);
+		return PathUtility.linearPath(start, path1, thisAlliance);
 	}
-
 	public Path path2() {
-		return line(path1, point2).linear(path1, point2);
+		return PathUtility.linearPath(path1, point2, thisAlliance);
 	}
-
 	public Path path3() {
-		return line(point2, park).linear(point2, park);
+		return PathUtility.linearPath(point2, park, thisAlliance);
 	}
 
 	private Command autoRoutine() {
@@ -62,13 +61,19 @@ public class AutonRed extends OpMode {
 		);
 	}
 
+	//Alliance-specific settings
+	protected Constants.General.Alliance thisAlliance=Constants.General.Alliance.UNKNOWN;
+
+	//Override class to change alliance-specific variables
+	protected void updateSettings() { } //Nothing in base class
+
 	@Override
 	public void init() {
+		updateSettings(); //Update alliance-specific settings
 		Scheduler.reset();
 
 		//Initialize robot hardware
-		//robot.init(hardwareMap, telemetry, start, org.firstinspires.ftc.teamcode.Constants.General.Alliance.RED);
-		robot.init(hardwareMap, telemetry, start, org.firstinspires.ftc.teamcode.Constants.General.Alliance.RED);
+		robot.init(hardwareMap, telemetry, translatePose(start,thisAlliance), thisAlliance);
 
 		//Initialize servo positions
 		robot.shooter.closeGate();

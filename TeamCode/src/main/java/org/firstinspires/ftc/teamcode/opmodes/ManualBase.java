@@ -66,6 +66,7 @@ public class ManualBase extends LinearOpMode {
 		while (opModeIsActive() && !isStopRequested()) {
 
 			if(firstLoop) {
+				robot.drive.setInitialHeadingTarget();
 				firstLoop=false;
 			}
 
@@ -156,26 +157,29 @@ public class ManualBase extends LinearOpMode {
 					robot.indexer.intakeSpeed();
 					intakeFlag = true;
 
-				//Expel
-				} else if (gamepad2.left_trigger >= Constants.General.CONTROLLER_DEADBAND) {
+					//Expel
+				} else
+					if (gamepad2.left_trigger >= Constants.General.CONTROLLER_DEADBAND) {
 						robot.intake.expel();
 						intakeFlag = false;
 
-				//Stop
-				} else {
-					robot.indexer.stop();
-
-					if (intakeFlag) {
-						intakeTimer.reset();
-						intakeFlag = false;
-					}
-
-					if (intakeTimer.time() < Constants.Intake.INTAKE_EXPEL_TIME) {
-						robot.intake.expel();
+						//Stop
 					} else {
-						robot.intake.stop();
+						robot.indexer.stop();
+
+						if (intakeFlag) {
+							intakeTimer.reset();
+							intakeFlag = false;
+						}
+
+						if (intakeTimer.time() < Constants.Intake.INTAKE_EXPEL_TIME) {
+							robot.intake.expel();
+						} else {
+							robot.intake.stop();
+						}
 					}
-				}
+			} else {
+				robot.intake.stop();
 			}
 
 			//------------------------------------------
