@@ -16,8 +16,8 @@ public class LimelightHiveTiltTracker extends LinearOpMode {
 	private Limelight3A limelight;
 
 	// Adjust these threshold angles (in degrees) based on actual field testing
-	private static final double TIPPING_THRESHOLD_MIN = 5.0;  // Starts to wobble
-	private static final double TIPPED_THRESHOLD_MAX = 25.0; // Completely flipped
+	private static final double TIPPING_THRESHOLD_MIN =25;  // Starts to wobble
+	private static final double TIPPED_THRESHOLD_MAX = 50; // Completely flipped
 
 	@Override
 	public void runOpMode() throws InterruptedException {
@@ -53,14 +53,15 @@ public class LimelightHiveTiltTracker extends LinearOpMode {
 					if (cameraSpacePose != null) {
 						// Extract orientation angles
 						YawPitchRollAngles orientation = cameraSpacePose.getOrientation();
-						double currentPitch = Math.abs(orientation.getPitch(AngleUnit.DEGREES));
+						double currentRoll = orientation.getRoll(AngleUnit.DEGREES);
 						int tagId = targetTag.getFiducialId();
 
 						// --- Threshold State Logic ---
 						String hiveState;
-						if (currentPitch >= TIPPED_THRESHOLD_MAX) {
+
+						if (currentRoll >= TIPPED_THRESHOLD_MAX) {
 							hiveState = "⚠️ TIPPED!";
-						} else if (currentPitch >= TIPPING_THRESHOLD_MIN) {
+						} else if (currentRoll >= TIPPING_THRESHOLD_MIN) {
 							hiveState = "🔄 TIPPING / WOBBLING";
 						} else {
 							hiveState = "✅ Stable (Not Tipped)";
@@ -69,7 +70,9 @@ public class LimelightHiveTiltTracker extends LinearOpMode {
 						// Send status to the driver station
 						telemetry.addData("Tracking Tag ID", tagId);
 						telemetry.addData("Hive State", hiveState);
-						telemetry.addData("Measured Tilt (Pitch)", "%.2f°", currentPitch);
+						telemetry.addData("Measured Tilt (Yaw)", "%.2f°", orientation.getYaw(AngleUnit.DEGREES));
+						telemetry.addData("Measured Tilt (Roll)", "%.2f°", orientation.getRoll(AngleUnit.DEGREES));
+						telemetry.addData("Measured Tilt (Pitch)", "%.2f°", currentRoll);
 					} else {
 						telemetry.addData("Status", "AprilTag seen, but 3D Pose data is unavailable.");
 					}
