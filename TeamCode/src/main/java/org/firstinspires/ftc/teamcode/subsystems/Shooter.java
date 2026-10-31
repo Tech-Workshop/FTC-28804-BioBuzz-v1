@@ -132,6 +132,9 @@ public class Shooter {
 		// If currentVoltage > NOMINAL_VOLTAGE (e.g., 13.5V > 12.0V), factor < 1.0 -> slower speed
 		// If currentVoltage < NOMINAL_VOLTAGE (e.g., 10.5V < 12.0V), factor > 1.0 -> faster speed
 		double factor = Constants.Shooter.NOMINAL_VOLTAGE / currentVoltage;
+
+
+
 		return baseVelocity * factor;
 	}
 
@@ -144,6 +147,10 @@ public class Shooter {
 	}
 
 	public void periodic() {
+		if (telemetry != null) {
+			telemetry.addData("Shooter Voltage", "%.2f V", getBatteryVoltage());
+		}
+
 		if(targetVelocity>0) {
 			double effectiveTarget = getCompensatedTargetVelocity();
 			double shooterPower=clamp(shooterPIDCalculate(getVelocity(),effectiveTarget),0,1);
@@ -156,6 +163,10 @@ public class Shooter {
 
 			//Set motor power
 			shooterMotor.setPower(shooterPower);
+
+			if (telemetry != null) {
+				telemetry.addData("Shooter Comp Target", "%.1f", effectiveTarget);
+			}
 		}
 
 		if(targetCounterVelocity>0) {
