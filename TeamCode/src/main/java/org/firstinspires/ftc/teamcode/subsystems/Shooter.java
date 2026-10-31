@@ -11,11 +11,13 @@ import static org.firstinspires.ftc.teamcode.utility.MathUtility.clamp;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.VoltageSensor;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Constants;
 
 public class Shooter {
+	private final HardwareMap hardwareMap;
 	private final DcMotorEx shooterMotor,counterMotor;
 	private final Servo ballstopServo;
 	private final Telemetry telemetry;
@@ -27,6 +29,8 @@ public class Shooter {
 	private double lastPower=0.0,lastCounterPower=0.0; //Used for power ramping
 
 	public Shooter(HardwareMap hardwareMap, Telemetry telemetry) {
+		this.hardwareMap = hardwareMap;
+
 		//Get shooter
 		this.shooterMotor = hardwareMap.get(DcMotorEx.class, Constants.Shooter.SHOOTER_ID);
 		shooterMotor.setDirection(Constants.Shooter.SHOOTER_DIRECTION);
@@ -103,9 +107,46 @@ public class Shooter {
 		return counterMotor.getVelocity();
 	}
 
+	public double getBatteryVoltage() {
+		double minVoltage = Double.MAX_VALUE;
+		if (hardwareMap != null && hardwareMap.voltageSensor != null) {
+			for (VoltageSensor sensor : hardwareMap.voltageSensor) {
+				double voltage = sensor.getVoltage();
+				if (voltage > 0) {
+					minVoltage = Math.min(minVoltage, voltage);
+				}
+			}
+		}
+		return (minVoltage == Double.MAX_VALUE) ? Constants.Shooter.NOMINAL_VOLTAGE : minVoltage;
+	}
+
+	public double getVoltageCompensatedVelocity(double baseVelocity) {
+		if (!Constants.Shooter.ENABLE_VOLTAGE_COMPENSATION) {
+			return baseVelocity;
+		}
+		double currentVoltage = getBatteryVoltage();
+		if (currentVoltage <= 0) {
+			return baseVelocity;
+		}
+		// Scale factor = NOMINAL_VOLTAGE / currentVoltage
+		// If currentVoltage > NOMINAL_VOLTAGE (e.g., 13.5V > 12.0V), factor < 1.0 -> slower speed
+		// If currentVoltage < NOMINAL_VOLTAGE (e.g., 10.5V < 12.0V), factor > 1.0 -> faster speed
+		double factor = Constants.Shooter.NOMINAL_VOLTAGE / currentVoltage;
+		return baseVelocity * factor;
+	}
+
+	public double getCompensatedTargetVelocity() {
+		return getVoltageCompensatedVelocity(targetVelocity);
+	}
+
+	public double getCompensatedCounterTargetVelocity() {
+		return getVoltageCompensatedVelocity(targetCounterVelocity);
+	}
+
 	public void periodic() {
 		if(targetVelocity>0) {
-			double shooterPower=clamp(shooterPIDCalculate(getVelocity(),targetVelocity),0,1);
+			double effectiveTarget = getCompensatedTargetVelocity();
+			double shooterPower=clamp(shooterPIDCalculate(getVelocity(),effectiveTarget),0,1);
 
 			//Ramp power
 			if(rampRate>0.0 && shooterPower>lastPower) {
@@ -118,7 +159,8 @@ public class Shooter {
 		}
 
 		if(targetCounterVelocity>0) {
-			double counterPower=clamp(counterPIDCalculate(getCounterVelocity(),targetCounterVelocity),0,1);
+			double effectiveCounterTarget = getCompensatedCounterTargetVelocity();
+			double counterPower=clamp(counterPIDCalculate(getCounterVelocity(),effectiveCounterTarget),0,1);
 
 			//Ramp power
 			if(rampRate>0.0 && counterPower>lastCounterPower) {
@@ -145,9 +187,9 @@ public class Shooter {
 		return (error*SHOOTER_COUNTER_PID_kP)+feedForward;
 	}
 
-
 	public boolean speedWithinError() {
-		if(Math.abs(getVelocity()-targetVelocity)<50) {
+		double effectiveTarget = getCompensatedTargetVelocity();
+		if(Math.abs(getVelocity()-effectiveTarget)<50) {
 			return true;
 		} else {
 			return false;
