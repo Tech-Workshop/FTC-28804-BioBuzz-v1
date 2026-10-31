@@ -20,7 +20,7 @@ import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.utility.PoseStorage;
 
 @Autonomous(name="[A] RED-Flower", preselectTeleOp = "RED-Manual")
-public class AutonFlowerRed extends OpMode {
+public class AutonFlowerRed extends AutonFlowerBase {
 	@Override
 	protected void updateSettings() {
 		thisAlliance = Constants.General.Alliance.RED;

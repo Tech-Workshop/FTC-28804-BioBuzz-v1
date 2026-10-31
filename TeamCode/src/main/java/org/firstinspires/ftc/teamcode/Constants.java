@@ -126,6 +126,10 @@ public class Constants {
 		public static final double SHOOTER_COUNTER_RAMP_RATE=0.20;
 		public static final double SHOOTER_COUNTER_VELOCITY=800; //Speed for pollen shot
 
+		// Voltage Compensation
+		public static boolean ENABLE_VOLTAGE_COMPENSATION = true;
+		public static double NOMINAL_VOLTAGE = 12.0;
+
 		public static final String HOOD_ID = "hood";
 		public static final double HOOD_MIN=0.68; //Minimum down position
 		public static final double HOOD_MAX=0.26; //Maximum up position
