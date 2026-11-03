@@ -30,6 +30,7 @@ public class Turret {
 
 	public void turnToZero() {
 		turretLeftServo.setPosition(Constants.Turret.TURRET_ZERO_POS);
+		turretRightServo.setPosition(Constants.Turret.TURRET_ZERO_POS);
 	}
 
 	//Turn turret to specified degrees (0 deg=straight forward)

@@ -18,6 +18,7 @@ public class ManualBase extends LinearOpMode {
 	boolean firstLoop=true;
 	boolean disableTurrets=false;
 	int loopCnt=0;
+	double shooterTarget=1450;
 
 	ElapsedTime shooterDelay=new ElapsedTime();
 	ElapsedTime resetShooterDelay=new ElapsedTime();
@@ -98,6 +99,24 @@ public class ManualBase extends LinearOpMode {
 
 			//------------------------------------------
 			//SHOOTER
+
+			if(gamepad1.dpadUpWasPressed()) {
+				shooterTarget+=10;
+				robot.shooter.setShotVelocity(shooterTarget);
+			} else if(gamepad1.dpadDownWasPressed()) {
+				shooterTarget-=10;
+				robot.shooter.setShotVelocity(shooterTarget);
+			}
+
+			telemetry.addData("Shooter Velocity:",shooterTarget);
+
+			if(gamepad1.dpadLeftWasPressed()) {
+				robot.shooter.lowerHood();
+			} else if(gamepad1.dpadRightWasPressed()) {
+				robot.shooter.raiseHood();
+			}
+
+			telemetry.addData("Hood Position:",robot.shooter.getHoodPosition());
 
 			//Shoot
 			if(gamepad1.right_trigger>=Constants.General.CONTROLLER_DEADBAND) {

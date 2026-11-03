@@ -62,7 +62,7 @@ public class UtilityServo extends LinearOpMode {
 
 			telemetry.addLine("Turrets (Reset 50%) - Press A");
 			telemetry.addLine("Turrets (Tuning) - D-Pad Right/Left");
-			telemetry.addData("Turrets (Pos):",turretLeft.getPosition());
+			telemetry.addData("Turrets (Pos):",turretPos);
 
 			//------------------------------------------------------
 			//BALL STOP

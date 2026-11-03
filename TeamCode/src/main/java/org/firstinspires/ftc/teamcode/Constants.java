@@ -74,10 +74,10 @@ public class Constants {
 		public static final double TURN_POWER_MULTIPLIER = 0.45;
 
 		//Teleop Heading Correction
-		public static final double TURN_POWER_CLOSE = 1.0; //Power multiplier when within 1 radian (ORIG=1.0)
-		public static final double TURN_POWER_FF = 0.12; //Feedforward drive power when correcting small heading errors (ORIG=0.03)
+		public static final double TURN_POWER_CLOSE = 0.7; //Power multiplier when within 1 radian (ORIG=1.0)
+		public static final double TURN_POWER_FF = 0.05; //Feedforward drive power when correcting small heading errors (ORIG=0.12)
 		public static final double TURN_ERROR = 0.05; //Allowed auto-turn error (teleop only)
-		public static final double TURN_ERROR_FULL=1.5; //When heading error above this threshold, full power (in radians)
+		public static final double TURN_ERROR_FULL=1.8; //When heading error above this threshold, full power (in radians)
 
 		//Strafing multiplier
 		public static final double STRAFE_MULTIPLIER = 1.2;
@@ -124,13 +124,14 @@ public class Constants {
 		public static final DcMotorSimple.Direction SHOOTER_COUNTER_DIRECTION = DcMotorSimple.Direction.REVERSE;
 		public static final double SHOOTER_COUNTER_PID_kS=0.18,SHOOTER_COUNTER_PID_kV=0.00042,SHOOTER_COUNTER_PID_kP=0.0003;
 		public static final double SHOOTER_COUNTER_RAMP_RATE=0.20;
-		public static final double SHOOTER_COUNTER_VELOCITY=1900; //Speed for pollen shot
+		public static final double SHOOTER_COUNTER_VELOCITY=SHOOTER_VELOCITY*1.415; //Speed for pollen shot
 
 		// Voltage Compensation
 		public static boolean ENABLE_VOLTAGE_COMPENSATION = true;
 		public static double NOMINAL_VOLTAGE = 12.0;
 
 		public static final String HOOD_ID = "hood";
+		public static final double HOOD_DEFAULT=0.50; //Minimum down position
 		public static final double HOOD_MIN=0.46; //Minimum down position
 		public static final double HOOD_MAX=0.90; //Maximum up position
 

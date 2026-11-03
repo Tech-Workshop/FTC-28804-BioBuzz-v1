@@ -19,12 +19,13 @@ import org.firstinspires.ftc.teamcode.Constants;
 public class Shooter {
 	private final HardwareMap hardwareMap;
 	private final DcMotorEx shooterMotor,counterMotor;
-	private final Servo ballstopServo;
+	private final Servo ballstopServo,hoodServo;
 	private final Telemetry telemetry;
 
 	private double ballstopClosedPos,ballstopOpenPos,shotVelocity,counterVelocity;
 	private double targetVelocity=0.0,targetCounterVelocity=0.0;
 	private double rampRate=Constants.Shooter.SHOOTER_RAMP_RATE;
+	private double hoodPos=Constants.Shooter.HOOD_DEFAULT;
 	private double rampCounterRate=Constants.Shooter.SHOOTER_COUNTER_RAMP_RATE;
 	private double lastPower=0.0,lastCounterPower=0.0; //Used for power ramping
 	private double restingBatteryVoltage=Constants.Shooter.NOMINAL_VOLTAGE;
@@ -40,8 +41,7 @@ public class Shooter {
 		//Get counter roller
 		this.counterMotor = hardwareMap.get(DcMotorEx.class, Constants.Shooter.SHOOTER_COUNTER_ID);
 		counterMotor.setDirection(Constants.Shooter.SHOOTER_COUNTER_DIRECTION);
-		//counterVelocity=Constants.Shooter.SHOOTER_COUNTER_VELOCITY;
-		counterVelocity=Constants.Shooter.SHOOTER_VELOCITY*1.415;
+		counterVelocity=Constants.Shooter.SHOOTER_COUNTER_VELOCITY;
 
 		//Get ball stop
 		this.ballstopServo = hardwareMap.get(Servo.class, Constants.Shooter.BALLSTOP_ID);
@@ -49,7 +49,7 @@ public class Shooter {
 		ballstopOpenPos=Constants.Shooter.BALLSTOP_CLEAR;
 
 		//Get hood
-
+		this.hoodServo = hardwareMap.get(Servo.class, Constants.Shooter.HOOD_ID);
 		this.telemetry=telemetry;
 
 		//Initialize resting battery voltage
@@ -95,6 +95,11 @@ public class Shooter {
 
 	public double getTargetVelocity() {
 		return targetVelocity;
+	}
+
+	public void setShotVelocity(double velocity) {
+		shotVelocity=velocity;
+		counterVelocity=velocity*1.415;
 	}
 
 	public void setTargetVelocity(double velocity) {
@@ -171,6 +176,23 @@ public class Shooter {
 
 	public double getCompensatedCounterTargetVelocity() {
 		return getVoltageCompensatedVelocity(targetCounterVelocity);
+	}
+
+	public void lowerHood() {
+		if(hoodPos>Constants.Shooter.HOOD_MIN)  {
+			hoodPos-=0.01;
+			hoodServo.setPosition(hoodPos);
+		}
+	}
+	public void raiseHood() {
+		if(hoodPos<Constants.Shooter.HOOD_MAX)  {
+			hoodPos+=0.01;
+			hoodServo.setPosition(hoodPos);
+		}
+	}
+
+	public double getHoodPosition() {
+		return hoodPos;
 	}
 
 	public void periodic() {
