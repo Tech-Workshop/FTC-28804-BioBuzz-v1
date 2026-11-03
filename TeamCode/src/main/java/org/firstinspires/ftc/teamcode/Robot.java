@@ -19,14 +19,13 @@ public class Robot {
 	public Intake intake;
 	public Indexer indexer;
 	public Shooter shooter;
-	//public Turret turret;
+	public Turret turret;
 	public Ramp ramp;
 	public Sensors sensors;
 
 	//Global variables
 	public Telemetry telemetry;
 	public Constants.General.Alliance alliance;
-	//public String tAlliance;
 
 	private static Robot instance = null;
 	private boolean enabled; //Required for instance
@@ -47,7 +46,7 @@ public class Robot {
 		this.intake=new Intake(hardwareMap,telemetry);
 		this.indexer=new Indexer(hardwareMap,telemetry);
 		this.shooter=new Shooter(hardwareMap,telemetry);
-		//this.turret=new Turret(hardwareMap,telemetry,alliance);
+		this.turret=new Turret(hardwareMap,telemetry,alliance);
 		this.ramp=new Ramp(hardwareMap,telemetry);
 		this.sensors=new Sensors(hardwareMap,telemetry);
 	}

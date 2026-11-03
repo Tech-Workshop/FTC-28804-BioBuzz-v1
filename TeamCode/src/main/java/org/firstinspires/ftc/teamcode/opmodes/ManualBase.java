@@ -17,6 +17,7 @@ public class ManualBase extends LinearOpMode {
 
 	boolean firstLoop=true;
 	boolean disableTurrets=false;
+	int loopCnt=0;
 
 	ElapsedTime shooterDelay=new ElapsedTime();
 	ElapsedTime resetShooterDelay=new ElapsedTime();
@@ -24,12 +25,8 @@ public class ManualBase extends LinearOpMode {
 
 	boolean intakeFlag=false,shooterFlag=false,rampMoving=false,resetShooterFlag=false;
 
-	Gamepad gamepad1Prev = new Gamepad();
-	Gamepad gamepad2Prev = new Gamepad();
-
 	//Alliance-specific
 	protected Constants.General.Alliance thisAlliance=Constants.General.Alliance.UNKNOWN;
-	//protected double poseHeadingOffset=0.0; //Offset heading in degrees
 	protected Pose defaultStart=new Pose(57.0,10.0,Math.toRadians(90.0));
 	protected Pose overridePose=new Pose(72.0, 72.0, Math.toRadians(0.0));
 
@@ -53,12 +50,8 @@ public class ManualBase extends LinearOpMode {
 
 		//Initialize servo positions
 		robot.shooter.closeGate();
-		//robot.turret.turnToZero();
-		//TODO: robot.ramp.initializeUp();
+		robot.turret.turnToZero();
 
-		//robot.drive.setAlliance(tAlliance);
-
-		telemetry.addData("alliance(1)=",thisAlliance);
 		telemetry.update();
 
 		waitForStart();
@@ -73,26 +66,23 @@ public class ManualBase extends LinearOpMode {
 			//------------------------------------------
 			//DRIVETRAIN
 
-			robot.drive.drive(gamepad1);
-
 			//Driver override heading
 			if(gamepad1.back) {
-				robot.drive.follower.setPose(overridePose);
-
-				//Disable turrets
-				//robot.turret.turnToDegrees(0.0);
-				disableTurrets=true;
+				robot.drive.overridePose(overridePose);
 			}
+
+			//Standard driver controls
+			robot.drive.drive(gamepad1);
 
 			//------------------------------------------
 			//FLOWER RAMP
 
-			if(gamepad2.dpad_up && !gamepad2Prev.dpad_up) {
+			if(gamepad2.dpadUpWasPressed()) {
 				if(robot.ramp.getStatus()!= Ramp.RAMP_STATUS.UP) {
 					robot.ramp.raise();
 					rampMoving=true;
 				}
-			} else if(gamepad2.dpad_down && !gamepad2Prev.dpad_down) {
+			} else if(gamepad2.dpadDownWasPressed()) {
 				if(robot.ramp.getStatus()!= Ramp.RAMP_STATUS.DOWN) {
 					robot.ramp.lower();
 					rampMoving=true;
@@ -186,10 +176,23 @@ public class ManualBase extends LinearOpMode {
 			}
 
 			//------------------------------------------
+			//HOOD
+
+			/*
+			if(gamepad1.dpadUpWasPressed()) {
+				robot.shooter.
+			} else if(gamepad1.dpadDownWasPressed()) {
+
+			}
+			*/
+
+			//------------------------------------------
 			//TURRETS
 
-			//Temp: Keep turret at zero
-			//robot.turret.turnToZero();
+			//Temp: Keep turret at zero (every 20 loops)
+			if(loopCnt%20==0) {
+				robot.turret.turnToZero();
+			}
 
 			/*
 			if(gamepad2.back) {
@@ -211,10 +214,7 @@ public class ManualBase extends LinearOpMode {
 			telemetry.addData("PP (heading-deg)",Math.toDegrees(robot.drive.follower.pose().heading()));
 
 			telemetry.update();
-
-			//Save state of gamepad (to detect initial button presses)
-			gamepad1Prev.copy(gamepad1);
-			gamepad2Prev.copy(gamepad2);
+			loopCnt++;
 		}
 	}
 }

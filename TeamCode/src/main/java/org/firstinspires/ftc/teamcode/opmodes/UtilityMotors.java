@@ -10,6 +10,7 @@ import org.firstinspires.ftc.teamcode.Constants;
 @TeleOp(group = "UTILITY",name="Utility: Motors Test")
 public class UtilityMotors extends LinearOpMode {
 	private DcMotorEx leftFrontDrive,leftBackDrive,rightFrontDrive,rightBackDrive,shooter,shooterCounter,intake,indexer;
+	double shooterCounterPower=0.50,indexerPower=0.50;
 
 	@Override
 	public void runOpMode() throws InterruptedException {
@@ -49,19 +50,25 @@ public class UtilityMotors extends LinearOpMode {
 				rightBackDrive.setPower(0.0);
 			}
 
-			if(gamepad1.b) {
-				shooter.setVelocity(1450);
-				//shooter.setPower(0.75);
+			if(gamepad1.dpad_up && shooterCounterPower<1.0) {
+				shooterCounterPower+=0.001;
+			} else if(gamepad1.dpad_down && shooterCounterPower>0.0) {
+				shooterCounterPower-=0.001;
+			}
+
+			if(gamepad1.right_trigger>0.05) {
+				//shooter.setVelocity(1450);
+				shooterCounter.setPower(shooterCounterPower);
 			} else {
-				shooter.setVelocity(0);
-				//shooter.setPower(0.0);
+				//shooter.setVelocity(0);
+				shooterCounter.setPower(0.0);
 			}
 
 			if(gamepad1.x) {
-				shooterCounter.setVelocity(800);
+				shooter.setVelocity(1450);
 				//shooterCounter.setPower(0.80);
 			} else {
-				shooterCounter.setVelocity(0);
+				shooter.setVelocity(0);
 				//shooterCounter.setPower(0.0);
 			}
 
@@ -71,16 +78,27 @@ public class UtilityMotors extends LinearOpMode {
 				intake.setPower(0.0);
 			}
 
+			if(gamepad1.dpad_right && indexerPower<1.0) {
+				indexerPower+=0.001;
+			} else if(gamepad1.dpad_left && indexerPower>0.0) {
+				indexerPower-=0.001;
+			}
+
 			if(gamepad1.left_bumper) {
-				indexer.setPower(0.7);
+				indexer.setPower(indexerPower);
 			} else {
 				indexer.setPower(0.0);
 			}
 
+			telemetry.addData("Counter Power:",shooterCounterPower);
+			telemetry.addData("Counter Velocity:",shooterCounter.getVelocity());
+
+			telemetry.addData("Indexer Power:",indexerPower);
+			telemetry.addData("Indexer Velocity",indexer.getVelocity());
+
 			telemetry.addData("Shooter Velocity:",shooter.getVelocity());
 			telemetry.addData("Counter Velocity:",shooterCounter.getVelocity());
 			telemetry.addData("Intake Velocity",intake.getVelocity());
-			telemetry.addData("Indexer Velocity",indexer.getVelocity());
 			telemetry.update();
 		}
 	}

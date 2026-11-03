@@ -124,15 +124,15 @@ public class Constants {
 		public static final DcMotorSimple.Direction SHOOTER_COUNTER_DIRECTION = DcMotorSimple.Direction.REVERSE;
 		public static final double SHOOTER_COUNTER_PID_kS=0.18,SHOOTER_COUNTER_PID_kV=0.00042,SHOOTER_COUNTER_PID_kP=0.0003;
 		public static final double SHOOTER_COUNTER_RAMP_RATE=0.20;
-		public static final double SHOOTER_COUNTER_VELOCITY=800; //Speed for pollen shot
+		public static final double SHOOTER_COUNTER_VELOCITY=1900; //Speed for pollen shot
 
 		// Voltage Compensation
 		public static boolean ENABLE_VOLTAGE_COMPENSATION = true;
 		public static double NOMINAL_VOLTAGE = 12.0;
 
 		public static final String HOOD_ID = "hood";
-		public static final double HOOD_MIN=0.68; //Minimum down position
-		public static final double HOOD_MAX=0.26; //Maximum up position
+		public static final double HOOD_MIN=0.46; //Minimum down position
+		public static final double HOOD_MAX=0.90; //Maximum up position
 
 
 		public static final String BALLSTOP_ID = "ball_stop"; //Axon Max+
@@ -147,7 +147,7 @@ public class Constants {
 		public static final String TURRET_LEFT_ID = "turret_left";
 		public static final String TURRET_RIGHT_ID = "turret_right";
 
-		public static final double TURRET_ZERO_POS=0.555;
+		public static final double TURRET_ZERO_POS=0.162;
 		public static final double TURRET_MIN=0.07;
 		public static final double TURRET_MAX=1.00;
 	}
@@ -160,7 +160,7 @@ public class Constants {
 		public static final DcMotorSimple.Direction INDEXER_DIRECTION = DcMotorSimple.Direction.REVERSE;
 
 		public static final double INDEXER_INTAKE_SPEED=1200;
-		public static final double INDEXER_SHOOT_SPEED=1700;
+		public static final double INDEXER_SHOOT_SPEED=2000;
 		public static final double INDEXER_REVERSE_SPEED=-800;
 	}
 }

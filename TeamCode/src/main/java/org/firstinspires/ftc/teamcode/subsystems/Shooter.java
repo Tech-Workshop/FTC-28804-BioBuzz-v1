@@ -40,12 +40,15 @@ public class Shooter {
 		//Get counter roller
 		this.counterMotor = hardwareMap.get(DcMotorEx.class, Constants.Shooter.SHOOTER_COUNTER_ID);
 		counterMotor.setDirection(Constants.Shooter.SHOOTER_COUNTER_DIRECTION);
-		counterVelocity=Constants.Shooter.SHOOTER_COUNTER_VELOCITY;
+		//counterVelocity=Constants.Shooter.SHOOTER_COUNTER_VELOCITY;
+		counterVelocity=Constants.Shooter.SHOOTER_VELOCITY*1.415;
 
 		//Get ball stop
 		this.ballstopServo = hardwareMap.get(Servo.class, Constants.Shooter.BALLSTOP_ID);
 		ballstopClosedPos=Constants.Shooter.BALLSTOP_BLOCK;
 		ballstopOpenPos=Constants.Shooter.BALLSTOP_CLEAR;
+
+		//Get hood
 
 		this.telemetry=telemetry;
 

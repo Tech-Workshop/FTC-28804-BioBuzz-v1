@@ -10,7 +10,8 @@ import org.firstinspires.ftc.teamcode.Constants;
 
 @TeleOp(group = "UTILITY",name="Utility: Servo Reset/Tuning")
 public class UtilityServo extends LinearOpMode {
-	private Servo turretLeft,turretRight,ballStop,hood,rampRight,rampLeft;
+	private Servo ballStop,hood,rampRight,rampLeft,test;
+	private ServoImplEx turretLeft,turretRight;
 
 	double turretPos=0.50;
 	double ballStopPos=0.50;
@@ -19,8 +20,11 @@ public class UtilityServo extends LinearOpMode {
 
 	@Override
 	public void runOpMode() throws InterruptedException {
-		turretLeft=hardwareMap.get(Servo.class, Constants.Turret.TURRET_LEFT_ID);
-		turretRight=hardwareMap.get(Servo.class, Constants.Turret.TURRET_RIGHT_ID);
+		turretLeft=hardwareMap.get(ServoImplEx.class, Constants.Turret.TURRET_LEFT_ID);
+		turretLeft.setPwmRange(new PwmControl.PwmRange(500, 2500));
+		turretRight=hardwareMap.get(ServoImplEx.class, Constants.Turret.TURRET_RIGHT_ID);
+		turretRight.setPwmRange(new PwmControl.PwmRange(500, 2500));
+
 		ballStop=hardwareMap.get(Servo.class, Constants.Shooter.BALLSTOP_ID);
 
 		hood=hardwareMap.get(Servo.class, Constants.Shooter.HOOD_ID);
@@ -36,7 +40,7 @@ public class UtilityServo extends LinearOpMode {
 
 			//Turret - Reset to 50%
 			if(gamepad1.a) {
-				//turretRight.setPosition(0.50);
+				turretRight.setPosition(0.50);
 				turretLeft.setPosition(0.50);
 				turretPos=0.5000;
 			}
@@ -46,13 +50,13 @@ public class UtilityServo extends LinearOpMode {
 				if (turretPos < 1.0) {
 					turretPos+=0.0001;
 					turretLeft.setPosition(turretPos);
-					//turretRight.setPosition(turretPos);
+					turretRight.setPosition(turretPos);
 				}
 			} else if (gamepad1.dpad_left) {
 				if (turretPos > 0.0) {
 					turretPos-=0.0001;
 					turretLeft.setPosition(turretPos);
-					//turretRight.setPosition(turretPos);
+					turretRight.setPosition(turretPos);
 				}
 			}
 
@@ -140,7 +144,6 @@ public class UtilityServo extends LinearOpMode {
 			telemetry.addLine("Hood (Reset 50%) - Press Y");
 			telemetry.addLine("Hood (Tuning) - Bumpers");
 			telemetry.addData("Hood (Pos):",hood.getPosition());
-
 
 			telemetry.update();
 		}

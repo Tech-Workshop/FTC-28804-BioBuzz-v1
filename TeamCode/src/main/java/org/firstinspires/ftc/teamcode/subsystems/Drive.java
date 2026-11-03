@@ -67,6 +67,11 @@ public class Drive {
 	}
 	 */
 
+	public void overridePose(Pose pose) {
+		follower.setPose(pose);
+		headingTarget=pose.heading();
+	}
+
 	/**
 	 * Teleop drive method
 	 *
@@ -79,13 +84,12 @@ public class Drive {
 			SPEED_MULTIPLIER *= 0.3;
 		}
 
-		//TODO: ORIGINAL TURN CODE -- double turnPower = -gamepad1.right_stick_x*TURN_POWER_MULTIPLIER*SPEED_MULTIPLIER;
-
 		DrivePowers powers;
 
-		telemetry.addData("alliance",alliance);
-		telemetry.addData("heading",Math.toDegrees(follower.pose().heading()));
-		//telemetry.update();
+		if(org.firstinspires.ftc.teamcode.Constants.General.DEBUG_MODE) {
+			telemetry.addData("Alliance: ", alliance);
+			telemetry.addData("Heading: ", Math.toDegrees(follower.pose().heading()));
+		}
 
 		double turnPower=0.0;
 		double headingCurrent=follower.pose().heading();
