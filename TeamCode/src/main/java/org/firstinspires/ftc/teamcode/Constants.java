@@ -113,12 +113,13 @@ public class Constants {
 	/*
 	 * Shooter Constants
 	 */
-	public static final class Shooter {
-		public static final String SHOOTER_ID = "shooter";
-		public static final DcMotorSimple.Direction SHOOTER_DIRECTION = DcMotorSimple.Direction.REVERSE;
-		public static final double SHOOTER_PID_kS=0.14,SHOOTER_PID_kV=0.0003,SHOOTER_PID_kP=0.003;
-		public static final double SHOOTER_RAMP_RATE=0.20;
-		public static final double SHOOTER_VELOCITY=1480; //Speed for pollen shot
+	@Config
+	public static class Shooter {
+		public static String SHOOTER_ID = "shooter";
+		public static DcMotorSimple.Direction SHOOTER_DIRECTION = DcMotorSimple.Direction.REVERSE;
+		public static double SHOOTER_PID_kS=0.14,SHOOTER_PID_kV=0.0003,SHOOTER_PID_kP=0.003;
+		public static double SHOOTER_RAMP_RATE=0.20;
+		public static double SHOOTER_VELOCITY=1480; //Speed for pollen shot
 
 		public static final String SHOOTER_COUNTER_ID = "shooter_counter";
 		public static final DcMotorSimple.Direction SHOOTER_COUNTER_DIRECTION = DcMotorSimple.Direction.REVERSE;
@@ -135,10 +136,9 @@ public class Constants {
 		public static final double HOOD_MIN=0.46; //Minimum down position
 		public static final double HOOD_MAX=0.90; //Maximum up position
 
-
-		public static final String BALLSTOP_ID = "ball_stop"; //Axon Max+
-		public static final double BALLSTOP_BLOCK=0.360; //Minimum down position
-		public static final double BALLSTOP_CLEAR=0.470; //Maximum up position
+		public static String BALLSTOP_ID = "ball_stop"; //Axon Max+
+		public static double BALLSTOP_BLOCK=0.360; //Minimum down position
+		public static double BALLSTOP_CLEAR=0.470; //Maximum up position
 	}
 
 	/*
