@@ -195,6 +195,10 @@ public class Shooter {
 		return hoodPos;
 	}
 
+	public void setHoodPosition(double position) {
+		hoodServo.setPosition(Math.clamp(position,Constants.Shooter.HOOD_MIN,Constants.Shooter.HOOD_MAX));
+	}
+
 	public void periodic() {
 		updateBatteryVoltage();
 
@@ -204,7 +208,11 @@ public class Shooter {
 		}
 
 		if(targetVelocity>0) {
-			double effectiveTarget = getCompensatedTargetVelocity();
+			double effectiveTarget=targetVelocity;
+			if(Constants.Shooter.ENABLE_VOLTAGE_COMPENSATION) {
+				effectiveTarget = getCompensatedTargetVelocity();
+				telemetry.addData("Shooter Comp Target", "%.1f", effectiveTarget);
+			}
 			double shooterPower=clamp(shooterPIDCalculate(getVelocity(),effectiveTarget),0,1);
 
 			//Ramp power
@@ -215,14 +223,15 @@ public class Shooter {
 
 			//Set motor power
 			shooterMotor.setPower(shooterPower);
-
-			if (telemetry != null) {
-				telemetry.addData("Shooter Comp Target", "%.1f", effectiveTarget);
-			}
 		}
 
 		if(targetCounterVelocity>0) {
-			double effectiveCounterTarget = getCompensatedCounterTargetVelocity();
+			double effectiveCounterTarget=targetCounterVelocity;
+			if(Constants.Shooter.ENABLE_VOLTAGE_COMPENSATION) {
+				effectiveCounterTarget = getCompensatedCounterTargetVelocity();
+				telemetry.addData("Counter Comp Target", "%.1f", effectiveCounterTarget);
+			}
+
 			double counterPower=clamp(counterPIDCalculate(getCounterVelocity(),effectiveCounterTarget),0,1);
 
 			//Ramp power
@@ -251,8 +260,12 @@ public class Shooter {
 	}
 
 	public boolean speedWithinError() {
-		double effectiveTarget = getCompensatedTargetVelocity();
-		if(Math.abs(getVelocity()-effectiveTarget)<50) {
+		double effectiveTarget=targetVelocity;
+		if(Constants.Shooter.ENABLE_VOLTAGE_COMPENSATION) {
+			effectiveTarget = getCompensatedTargetVelocity();
+		}
+
+		if(Math.abs(getVelocity()-effectiveTarget)<Constants.Shooter.SHOOTER_ERROR_ALLOWED) {
 			return true;
 		} else {
 			return false;

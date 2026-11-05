@@ -1,12 +1,14 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
 import static org.firstinspires.ftc.teamcode.Constants.Drive.DRIVE_SPEED;
+import static org.firstinspires.ftc.teamcode.Constants.Drive.TURN_KD;
+import static org.firstinspires.ftc.teamcode.Constants.Drive.TURN_KP;
+import static org.firstinspires.ftc.teamcode.Constants.Drive.TURN_KS;
 import static org.firstinspires.ftc.teamcode.Constants.Drive.TURN_ERROR;
-import static org.firstinspires.ftc.teamcode.Constants.Drive.TURN_ERROR_FULL;
-import static org.firstinspires.ftc.teamcode.Constants.Drive.TURN_POWER_CLOSE;
-import static org.firstinspires.ftc.teamcode.Constants.Drive.TURN_POWER_FF;
 import static org.firstinspires.ftc.teamcode.Constants.Drive.TURN_POWER_MULTIPLIER;
+import static org.firstinspires.ftc.teamcode.Constants.Drive.TURN_RATE_TOL;
 import static org.firstinspires.ftc.teamcode.Constants.General.CONTROLLER_AUTO_ERROR;
+import static org.firstinspires.ftc.teamcode.Constants.General.DEBUG_MODE;
 
 import com.pedropathing.drivetrain.DrivePowers;
 import com.pedropathing.follower.Follower;
@@ -119,22 +121,23 @@ public class Drive {
 
 			//Identify error between current heading and maintain heading
 			double headingError = MathUtility.normalizeAngle(headingTarget - headingCurrent);
+			double turnRate = follower.velocity().omega;
 
-			//Calculate heading correction power (note error in radians)
-			if (Math.abs(headingError) < TURN_ERROR) {
+			if (Math.abs(headingError) < TURN_ERROR && Math.abs(turnRate) < TURN_RATE_TOL) {
 				turnPower = 0.0;
-			} else if (headingError > TURN_ERROR_FULL) {
-				turnPower = 1;
-			} else if (headingError < -TURN_ERROR_FULL) {
-				turnPower = -1;
 			} else {
-				turnPower = MathUtility.clamp(((headingError / TURN_ERROR_FULL) * TURN_POWER_CLOSE) + (Math.signum(headingError) * TURN_POWER_FF), -1.0, 1.0);
+				double p = TURN_KP * headingError;
+				double d = -TURN_KD * turnRate;               // opposes motion, so it brakes as you approach
+				double ff = Math.abs(headingError) < TURN_ERROR ? 0 : TURN_KS * Math.signum(headingError);
+				turnPower = MathUtility.clamp(p + d + ff, -1.0, 1.0);
 			}
 
-			//turnPower *= TURN_POWER_MULTIPLIER;
-
-			telemetry.addData("headingError=",headingError);
-			telemetry.addData("turnPower=",turnPower);
+			if(DEBUG_MODE) {
+				telemetry.addLine("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+				telemetry.addData("headingError=", headingError);
+				telemetry.addData("turnPower=", turnPower);
+				telemetry.addLine("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+			}
 		}
 
 		//Driving from Blue Alliance
@@ -162,5 +165,14 @@ public class Drive {
 		telemetry.addData("Robot X", follower.pose().x());
 		telemetry.addData("Robot Y", follower.pose().y());
 		telemetry.addData("Robot Heading", Math.toDegrees(follower.pose().heading()));
+	}
+
+	//Set heading target (for turn-to-aim mode)
+	public void setHeadingTarget(double heading) {
+		this.headingTarget=MathUtility.normalizeAngle(heading);
+	}
+
+	public double getHeadingErrorInDegrees() {
+		return Math.toDegrees(MathUtility.normalizeAngle(headingTarget - follower.pose().heading()));
 	}
 }

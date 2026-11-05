@@ -16,8 +16,8 @@ public class UtilityShooterTunerKp extends OpMode {
 	private DcMotorEx shooter;
 	double[] increments = { 0.000001, 0.00001, 0.0001, 0.001, 0.01 };
 	int incrementIndex = 2;
-	double kS=0.18;
-	double kV=0.00042;
+	double kS=0.15;
+	double kV=0.00043;
 	public static double kP=0.0;
 	double goalVelocity=800;
 	FtcDashboard dashboard=FtcDashboard.getInstance();

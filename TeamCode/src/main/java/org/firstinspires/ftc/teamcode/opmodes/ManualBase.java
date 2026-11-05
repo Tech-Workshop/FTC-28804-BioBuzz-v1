@@ -1,9 +1,9 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.pedropathing.math.Pose;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.Constants;
@@ -12,11 +12,9 @@ import org.firstinspires.ftc.teamcode.subsystems.Ramp;
 import org.firstinspires.ftc.teamcode.utility.PoseStorage;
 
 public class ManualBase extends LinearOpMode {
-
 	private final Robot robot = Robot.getInstance();
 
-	boolean firstLoop=true;
-	boolean disableTurrets=false;
+	boolean firstLoop=true, disableTurrets=false, driverOnly=false;
 	int loopCnt=0;
 	double shooterTarget=1450;
 
@@ -37,6 +35,9 @@ public class ManualBase extends LinearOpMode {
 	@Override
 	public void runOpMode() throws InterruptedException {
 
+		//Enable dashboard
+		telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
+
 		//TODO: Verify below works
 		updateSettings(); //Update alliance-specific settings
 
@@ -46,7 +47,6 @@ public class ManualBase extends LinearOpMode {
 		}
 
 		//Initialize robot hardware
-		//robot.init(hardwareMap, telemetry, defaultStart, thisAlliance);
 		robot.init(hardwareMap, telemetry, defaultStart, thisAlliance);
 
 		//Initialize servo positions
@@ -65,6 +65,31 @@ public class ManualBase extends LinearOpMode {
 			}
 
 			//------------------------------------------
+			//Change Aim Mode
+			if(gamepad2.backWasPressed()) {
+				if(robot.aimMode==Constants.General.AimMode.TURRET) {
+					robot.aimMode=Constants.General.AimMode.TURN;
+				} else if(robot.aimMode==Constants.General.AimMode.TURRET) {
+					robot.aimMode=Constants.General.AimMode.MANUAL;
+				} else {
+					robot.aimMode=Constants.General.AimMode.TURRET;
+				}
+			}
+
+			if(driverOnly) { telemetry.addLine("=== DRIVER ONLY CONTROL ==="); }
+
+			//Display Aim Mode
+			telemetry.addData("Aim Mode:",robot.aimMode);
+			telemetry.addLine("-----------------------------------");
+			//telemetry.addData("Turret status:",robot.turret.getStatus());
+			telemetry.addData("Angular velocity:",robot.drive.follower.velocity().omega);
+
+			//Change to driver only mode
+			if(gamepad1.a && gamepad1.b) {
+				driverOnly=true;
+			}
+
+			//------------------------------------------
 			//DRIVETRAIN
 
 			//Driver override heading
@@ -78,12 +103,12 @@ public class ManualBase extends LinearOpMode {
 			//------------------------------------------
 			//FLOWER RAMP
 
-			if(gamepad2.dpadUpWasPressed()) {
+			if(gamepad2.dpadUpWasPressed() || (driverOnly && gamepad1.dpadUpWasPressed())) {
 				if(robot.ramp.getStatus()!= Ramp.RAMP_STATUS.UP) {
 					robot.ramp.raise();
 					rampMoving=true;
 				}
-			} else if(gamepad2.dpadDownWasPressed()) {
+			} else if(gamepad2.dpadDownWasPressed() || (driverOnly && gamepad1.dpadDownWasPressed())) {
 				if(robot.ramp.getStatus()!= Ramp.RAMP_STATUS.DOWN) {
 					robot.ramp.lower();
 					rampMoving=true;
@@ -108,7 +133,13 @@ public class ManualBase extends LinearOpMode {
 				robot.shooter.setShotVelocity(shooterTarget);
 			}
 
-			telemetry.addData("Shooter Velocity:",shooterTarget);
+			if(Constants.General.DEBUG_MODE) {
+				telemetry.addData("Base Line", 2000.0);
+				telemetry.addData("Shooter Velocity (target):", shooterTarget);
+				telemetry.addData("Shooter Velocity (actual):", robot.shooter.getVelocity());
+				telemetry.addData("Counter Velocity (target):", robot.shooter.getCounterTargetVelocity());
+				telemetry.addData("Counter Velocity (actual):", robot.shooter.getCounterVelocity());
+			}
 
 			if(gamepad1.dpadLeftWasPressed()) {
 				robot.shooter.lowerHood();
@@ -122,23 +153,42 @@ public class ManualBase extends LinearOpMode {
 			if(gamepad1.right_trigger>=Constants.General.CONTROLLER_DEADBAND) {
 				//Start spinning flywheel and counter rollers
 				if(!shooterFlag) {
+					//Set shooter speed and hood angle based on vertical and sideways distances
+					if(Constants.Shooter.SHOOTER_SPEED_AUTO) {
+						double s = robot.turret.getSidewaysDistance();
+						double v = robot.turret.getVerticalDistance();
+
+						double velocity = 977.89 - 0.4284 * v - 0.2965 * s;
+						double hoodAngle = 0.0703 + 0.01604 * v + 0.003832 * s;
+
+						robot.shooter.setShotVelocity(velocity);
+						robot.shooter.setHoodPosition(hoodAngle);
+					}
+
 					robot.shooter.spinFlywheel();
 					robot.shooter.spinCounter();
 					shooterDelay.reset();
 					shooterFlag=true;
 
+					//Aim Mode is Turn to Target
+					if(robot.aimMode==Constants.General.AimMode.TURN) {
+						robot.drive.setHeadingTarget(Math.toRadians(robot.turret.getHeadingToTarget()));
+					}
+
 					//Spun up - open gate and index
-				} else if(shooterDelay.time()>1.0 && robot.shooter.speedWithinError()) {
+				} else if(shooterDelay.time()>1.0 && robot.shooter.speedWithinError() && (robot.aimMode!=Constants.General.AimMode.TURN || (robot.drive.follower.velocity().omega<0.2 && robot.drive.getHeadingErrorInDegrees()<5))) {
 					robot.shooter.openGate();
 					robot.indexer.shootSpeed();
 					telemetry.addLine("Opened gate");
 				}
 
-				telemetry.addData("Shoot - target=",robot.shooter.getTargetVelocity());
-				telemetry.addData("Shoot - comp target=", "%.1f", robot.shooter.getCompensatedTargetVelocity());
-				telemetry.addData("Shoot - actual=",robot.shooter.getVelocity());
-				telemetry.addData("Shoot - rest voltage=", "%.2f V", robot.shooter.getBatteryVoltage());
-				telemetry.addData("Shoot - raw voltage=", "%.2f V", robot.shooter.getRawBatteryVoltage());
+				if(Constants.General.DEBUG_MODE) {
+					telemetry.addData("Shoot - target=", robot.shooter.getTargetVelocity());
+					telemetry.addData("Shoot - comp target=", "%.1f", robot.shooter.getCompensatedTargetVelocity());
+					telemetry.addData("Shoot - actual=", robot.shooter.getVelocity());
+					telemetry.addData("Shoot - rest voltage=", "%.2f V", robot.shooter.getBatteryVoltage());
+					telemetry.addData("Shoot - raw voltage=", "%.2f V", robot.shooter.getRawBatteryVoltage());
+				}
 
 			} else if(shooterFlag) {
 				shooterFlag=false;
@@ -164,14 +214,14 @@ public class ManualBase extends LinearOpMode {
 
 			//Intake
 			if(gamepad1.right_trigger<=Constants.General.CONTROLLER_DEADBAND && !resetShooterFlag && !shooterFlag) {
-				if (gamepad2.right_trigger >= Constants.General.CONTROLLER_DEADBAND) {
+				if (gamepad2.right_trigger>=Constants.General.CONTROLLER_DEADBAND || (driverOnly && gamepad1.left_trigger>=Constants.General.CONTROLLER_DEADBAND)) {
 					robot.intake.intake();
 					robot.indexer.intakeSpeed();
 					intakeFlag = true;
 
-					//Expel
+				//Expel
 				} else
-					if (gamepad2.left_trigger >= Constants.General.CONTROLLER_DEADBAND) {
+					if (gamepad2.left_trigger >= Constants.General.CONTROLLER_DEADBAND || (driverOnly && gamepad1.right_bumper)) {
 						robot.intake.expel();
 						intakeFlag = false;
 

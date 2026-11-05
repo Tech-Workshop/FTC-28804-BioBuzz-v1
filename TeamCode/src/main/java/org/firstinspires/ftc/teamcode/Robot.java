@@ -29,6 +29,7 @@ public class Robot {
 
 	private static Robot instance = null;
 	private boolean enabled; //Required for instance
+	public Constants.General.AimMode aimMode=Constants.General.defaultAimMode;
 
 	public static Robot getInstance() {
 		if(instance==null) {

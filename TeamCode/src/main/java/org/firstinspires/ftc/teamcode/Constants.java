@@ -20,7 +20,6 @@ public class Constants {
 		//Controller
 		public static final double CONTROLLER_DEADBAND=0.05;
 		public static final double CONTROLLER_AUTO_ERROR=Math.PI/10;
-		public static final boolean CONTROLLER_AUTO_HEADING=true;
 
 		//Alliance types
 		public enum Alliance {
@@ -34,6 +33,15 @@ public class Constants {
 		public static List<Double> hiveBlueFar = Arrays.asList(83.5,86.5);
 		public static List<Double> hiveRedClose = Arrays.asList(58.0,55.0);
 		public static List<Double> hiveRedFar = Arrays.asList(58.0,86.5);
+
+		//Aiming mode
+		public enum AimMode {
+			TURRET,
+			TURN,
+			MANUAL
+		}
+
+		public static final AimMode defaultAimMode=AimMode.TURRET;
 	}
 
 	/*
@@ -74,10 +82,11 @@ public class Constants {
 		public static final double TURN_POWER_MULTIPLIER = 0.45;
 
 		//Teleop Heading Correction
-		public static final double TURN_POWER_CLOSE = 0.7; //Power multiplier when within 1 radian (ORIG=1.0)
-		public static final double TURN_POWER_FF = 0.05; //Feedforward drive power when correcting small heading errors (ORIG=0.12)
+		public static final double TURN_KP = 0.7;           // power per radian of error (orig=1.2)
+		public static final double TURN_KD = 0.1;          // power per rad/s of angular velocity (orig=0.15)
+		public static final double TURN_KS = 0.11;          // minimum power to overcome friction (your TURN_POWER_FF)
 		public static final double TURN_ERROR = 0.05; //Allowed auto-turn error (teleop only)
-		public static final double TURN_ERROR_FULL=1.8; //When heading error above this threshold, full power (in radians)
+		public static final double TURN_RATE_TOL = Math.toRadians(5.0);   // rad/s, "stopped enough"
 
 		//Strafing multiplier
 		public static final double STRAFE_MULTIPLIER = 1.2;
@@ -105,7 +114,7 @@ public class Constants {
 
 		public static final double RAMP_UP_POS=0.10; //Note, this is the position for both since it is exactly the middle
 		public static final double RAMP_DOWN_POS=0.70; //Note, this is for right servo only (left is opposite 1.0-0.17=0.83)
-		public static final double RAMP_INCREMENT=0.007; //Note, values above must exactly match (n)*increment
+		public static final double RAMP_INCREMENT=0.012; //Note, values above must exactly match (n)*increment
 		public static final double RAMP_SLOWDOWN_DISTANCE=0.10;
 		public static final double RAMP_MIN_SCALE=0.001;
 	}
@@ -115,27 +124,34 @@ public class Constants {
 	 */
 	@Config
 	public static class Shooter {
+		//Shooter (flywheel)
 		public static String SHOOTER_ID = "shooter";
 		public static DcMotorSimple.Direction SHOOTER_DIRECTION = DcMotorSimple.Direction.REVERSE;
 		public static double SHOOTER_PID_kS=0.14,SHOOTER_PID_kV=0.0003,SHOOTER_PID_kP=0.003;
 		public static double SHOOTER_RAMP_RATE=0.20;
-		public static double SHOOTER_VELOCITY=1480; //Speed for pollen shot
+		public static double SHOOTER_VELOCITY=1100; //Speed for pollen shot (default)
+		public static double SHOOTER_ERROR_ALLOWED=25; //Allowed error for shot (ticks/sec)
+		public static boolean SHOOTER_SPEED_AUTO=true;
 
+		//Counter rollers
 		public static final String SHOOTER_COUNTER_ID = "shooter_counter";
 		public static final DcMotorSimple.Direction SHOOTER_COUNTER_DIRECTION = DcMotorSimple.Direction.REVERSE;
-		public static final double SHOOTER_COUNTER_PID_kS=0.18,SHOOTER_COUNTER_PID_kV=0.00042,SHOOTER_COUNTER_PID_kP=0.0003;
+		public static final double SHOOTER_COUNTER_PID_kS=0.15,SHOOTER_COUNTER_PID_kV=0.00043,SHOOTER_COUNTER_PID_kP=0.0003;
 		public static final double SHOOTER_COUNTER_RAMP_RATE=0.20;
-		public static final double SHOOTER_COUNTER_VELOCITY=SHOOTER_VELOCITY*1.415; //Speed for pollen shot
+		public static final double SHOOTER_COUNTER_RATIO=1.2; //Ratio for counter motor compared to shooter wheel (1.415=same surface speed)
+		public static final double SHOOTER_COUNTER_VELOCITY=SHOOTER_VELOCITY*SHOOTER_COUNTER_RATIO; //Speed for pollen shot
 
 		// Voltage Compensation
-		public static boolean ENABLE_VOLTAGE_COMPENSATION = true;
+		public static boolean ENABLE_VOLTAGE_COMPENSATION = false;
 		public static double NOMINAL_VOLTAGE = 12.0;
 
+		//Hood
 		public static final String HOOD_ID = "hood";
 		public static final double HOOD_DEFAULT=0.50; //Minimum down position
 		public static final double HOOD_MIN=0.46; //Minimum down position
 		public static final double HOOD_MAX=0.90; //Maximum up position
 
+		//Ball stop
 		public static String BALLSTOP_ID = "ball_stop"; //Axon Max+
 		public static double BALLSTOP_BLOCK=0.360; //Minimum down position
 		public static double BALLSTOP_CLEAR=0.470; //Maximum up position

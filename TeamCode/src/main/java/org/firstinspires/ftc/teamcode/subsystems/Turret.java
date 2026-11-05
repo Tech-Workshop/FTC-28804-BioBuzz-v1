@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
+import static android.os.SystemClock.sleep;
+
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.ServoImplEx;
 import com.qualcomm.robotcore.hardware.PwmControl;
@@ -44,6 +46,16 @@ public class Turret {
 	}
 
 	public void turnToTarget() {
+		//Get heading to target (based on alliance and field position)
+		double targetAngle=getHeadingToTarget();
+
+		//Get adjusted robot heading
+		double robotAngle=Math.toDegrees(robot.drive.follower.pose().heading())-90;
+
+		turnToDegrees(targetAngle-robotAngle);
+	}
+
+	public double getHeadingToTarget() {
 		//Get position on field to determine target
 		double targetX,targetY;
 
@@ -52,38 +64,90 @@ public class Turret {
 			if(alliance==Constants.General.Alliance.BLUE) {
 				targetX=Constants.General.hiveBlueFar.get(0);
 				targetY=Constants.General.hiveBlueFar.get(1);
-				telemetry.addLine("TARGET=BLUE Far");
 			} else {
 				targetX=Constants.General.hiveRedFar.get(0);
 				targetY=Constants.General.hiveRedFar.get(1);
-				telemetry.addLine("TARGET=RED Far");
 			}
 
-		//Close
+			//Close
 		} else {
 			if(alliance==Constants.General.Alliance.BLUE) {
 				targetX=Constants.General.hiveBlueClose.get(0);
 				targetY=Constants.General.hiveBlueClose.get(1);
-				telemetry.addLine("TARGET=BLUE Close");
 			} else {
 				targetX=Constants.General.hiveRedClose.get(0);
 				targetY=Constants.General.hiveRedClose.get(1);
-				telemetry.addLine("TARGET=RED Close");
 			}
 		}
 
-		//Get robot angle to target
-		double targetAngle=angleToTarget(robot.drive.follower.pose().x(),robot.drive.follower.pose().y(),targetX,targetY);
-
-		//Get adjusted robot heading
-		double robotAngle=Math.toDegrees(robot.drive.follower.pose().heading())-90;
-
-		turnToDegrees(targetAngle-robotAngle);
+		//Return robot angle to target
+		return angleToTarget(robot.drive.follower.pose().x(),robot.drive.follower.pose().y(),targetX,targetY);
 	}
 
 	public static double angleToTarget(double robotX, double robotY, double targetX, double targetY) {
 		double dx = targetX - robotX;
 		double dy = targetY - robotY;
-		return Math.toDegrees(Math.atan2(-dx, dy));
+		//return Math.toDegrees(Math.atan2(-dx, dy));
+		return Math.toDegrees(Math.atan2(dy, dx));
+	}
+
+	public double getSidewaysDistance() {
+		//Get position on field to determine target
+		double targetX,targetY;
+
+		//Far
+		if(robot.drive.follower.pose().y()>70.75) {
+			if(alliance==Constants.General.Alliance.BLUE) {
+				targetX=Constants.General.hiveBlueFar.get(0);
+				targetY=Constants.General.hiveBlueFar.get(1);
+			} else {
+				targetX=Constants.General.hiveRedFar.get(0);
+				targetY=Constants.General.hiveRedFar.get(1);
+			}
+
+			//Close
+		} else {
+			if(alliance==Constants.General.Alliance.BLUE) {
+				targetX=Constants.General.hiveBlueClose.get(0);
+				targetY=Constants.General.hiveBlueClose.get(1);
+			} else {
+				targetX=Constants.General.hiveRedClose.get(0);
+				targetY=Constants.General.hiveRedClose.get(1);
+			}
+		}
+
+		return Math.abs(targetX-robot.drive.follower.pose().x());
+	}
+
+	public double getVerticalDistance() {
+		//Get position on field to determine target
+		double targetX,targetY;
+
+		//Far
+		if(robot.drive.follower.pose().y()>70.75) {
+			if(alliance==Constants.General.Alliance.BLUE) {
+				targetX=Constants.General.hiveBlueFar.get(0);
+				targetY=Constants.General.hiveBlueFar.get(1);
+			} else {
+				targetX=Constants.General.hiveRedFar.get(0);
+				targetY=Constants.General.hiveRedFar.get(1);
+			}
+
+			//Close
+		} else {
+			if(alliance==Constants.General.Alliance.BLUE) {
+				targetX=Constants.General.hiveBlueClose.get(0);
+				targetY=Constants.General.hiveBlueClose.get(1);
+			} else {
+				targetX=Constants.General.hiveRedClose.get(0);
+				targetY=Constants.General.hiveRedClose.get(1);
+			}
+		}
+
+		return Math.abs(targetY-robot.drive.follower.pose().y());
+	}
+
+	public String getStatus() {
+		return "Alliance="+this.alliance;
 	}
 }

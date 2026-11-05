@@ -10,7 +10,7 @@ public class ManualBlue extends ManualBase {
 	@Override
 	protected void updateSettings() {
 		thisAlliance = Constants.General.Alliance.BLUE;
-		defaultStart=new Pose(57.0,10.0,Math.toRadians(90.0));
+		defaultStart=new Pose(132.5,7.8,Math.toRadians(180.0));
 		overridePose=new Pose(72.0, 72.0, Math.toRadians(180.0));
 	}
 }

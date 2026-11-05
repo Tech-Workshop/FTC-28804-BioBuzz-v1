@@ -14,9 +14,9 @@ public class UtilityShooterTunerKv extends OpMode {
 	private DcMotorEx shooter;
 	double[] increments = { 0.000001, 0.00001, 0.0001, 0.001, 0.01 };
 	int incrementIndex = 4;
-	double kS=0.18;
+	double kS=0.15;
 	double kV=0.0;
-	double goalVelocity=800; //Shooter=1450; Counter=800
+	double goalVelocity=1400; //Shooter=1450; Counter=800
 
 	@Override
 	public void init() {
