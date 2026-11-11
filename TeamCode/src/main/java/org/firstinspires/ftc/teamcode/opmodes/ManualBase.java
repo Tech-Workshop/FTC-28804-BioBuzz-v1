@@ -16,13 +16,13 @@ public class ManualBase extends LinearOpMode {
 
 	boolean firstLoop=true, disableTurrets=false, driverOnly=false;
 	int loopCnt=0;
-	double shooterTarget=1450;
+	double shooterTarget=1650;
 
 	ElapsedTime shooterDelay=new ElapsedTime();
 	ElapsedTime resetShooterDelay=new ElapsedTime();
 	ElapsedTime intakeTimer=new ElapsedTime();
 
-	boolean intakeFlag=false,shooterFlag=false,rampMoving=false,resetShooterFlag=false;
+	boolean intakeFlag=false,shooterFlag=false,shooterCorrectionFlag=false,rampMoving=false,resetShooterFlag=false;
 
 	//Alliance-specific
 	protected Constants.General.Alliance thisAlliance=Constants.General.Alliance.UNKNOWN;
@@ -53,6 +53,7 @@ public class ManualBase extends LinearOpMode {
 		robot.shooter.closeGate();
 		robot.turret.turnToZero();
 
+		robot.sensors.setLedDisable();
 		telemetry.update();
 
 		waitForStart();
@@ -82,7 +83,7 @@ public class ManualBase extends LinearOpMode {
 			telemetry.addData("Aim Mode:",robot.aimMode);
 			telemetry.addLine("-----------------------------------");
 			//telemetry.addData("Turret status:",robot.turret.getStatus());
-			telemetry.addData("Angular velocity:",robot.drive.follower.velocity().omega);
+			//telemetry.addData("Angular velocity:",robot.drive.follower.velocity().omega);
 
 			//Change to driver only mode
 			if(gamepad1.a && gamepad1.b) {
@@ -93,22 +94,23 @@ public class ManualBase extends LinearOpMode {
 			//DRIVETRAIN
 
 			//Driver override heading
-			if(gamepad1.back) {
+			if(gamepad1.backWasPressed()) {
 				robot.drive.overridePose(overridePose);
-			}
 
 			//Standard driver controls
-			robot.drive.drive(gamepad1);
+			} else {
+				robot.drive.drive(gamepad1);
+			}
 
 			//------------------------------------------
 			//FLOWER RAMP
 
-			if(gamepad2.dpadUpWasPressed() || (driverOnly && gamepad1.dpadUpWasPressed())) {
+			if(gamepad2.dpadUpWasPressed() || (driverOnly && Constants.Shooter.SHOOTER_SPEED_AUTO && gamepad1.dpadUpWasPressed())) {
 				if(robot.ramp.getStatus()!= Ramp.RAMP_STATUS.UP) {
 					robot.ramp.raise();
 					rampMoving=true;
 				}
-			} else if(gamepad2.dpadDownWasPressed() || (driverOnly && gamepad1.dpadDownWasPressed())) {
+			} else if(gamepad2.dpadDownWasPressed() || (driverOnly && Constants.Shooter.SHOOTER_SPEED_AUTO && gamepad1.dpadDownWasPressed())) {
 				if(robot.ramp.getStatus()!= Ramp.RAMP_STATUS.DOWN) {
 					robot.ramp.lower();
 					rampMoving=true;
@@ -125,85 +127,135 @@ public class ManualBase extends LinearOpMode {
 			//------------------------------------------
 			//SHOOTER
 
-			if(gamepad1.dpadUpWasPressed()) {
-				shooterTarget+=10;
-				robot.shooter.setShotVelocity(shooterTarget);
-			} else if(gamepad1.dpadDownWasPressed()) {
-				shooterTarget-=10;
-				robot.shooter.setShotVelocity(shooterTarget);
+			if(robot.aimMode==Constants.General.AimMode.MANUAL) {
+				if (gamepad1.dpadUpWasPressed()) {
+					shooterTarget += 10;
+					robot.shooter.setShotVelocity(shooterTarget);
+				} else
+					if (gamepad1.dpadDownWasPressed()) {
+						shooterTarget -= 10;
+						robot.shooter.setShotVelocity(shooterTarget);
+				}
+
+				if(gamepad1.dpadLeftWasPressed()) {
+					robot.shooter.lowerHood();
+				} else if(gamepad1.dpadRightWasPressed()) {
+					robot.shooter.raiseHood();
+				}
 			}
 
-			if(Constants.General.DEBUG_MODE) {
-				telemetry.addData("Base Line", 2000.0);
-				telemetry.addData("Shooter Velocity (target):", shooterTarget);
-				telemetry.addData("Shooter Velocity (actual):", robot.shooter.getVelocity());
-				telemetry.addData("Counter Velocity (target):", robot.shooter.getCounterTargetVelocity());
-				telemetry.addData("Counter Velocity (actual):", robot.shooter.getCounterVelocity());
-			}
-
-			if(gamepad1.dpadLeftWasPressed()) {
-				robot.shooter.lowerHood();
-			} else if(gamepad1.dpadRightWasPressed()) {
-				robot.shooter.raiseHood();
-			}
-
+			telemetry.addData("Shooter (target):", shooterTarget);
+			telemetry.addData("Shooter (actual):", robot.shooter.getVelocity());
 			telemetry.addData("Hood Position:",robot.shooter.getHoodPosition());
 
-			//Shoot
-			if(gamepad1.right_trigger>=Constants.General.CONTROLLER_DEADBAND) {
-				//Start spinning flywheel and counter rollers
-				if(!shooterFlag) {
-					//Set shooter speed and hood angle based on vertical and sideways distances
-					if(Constants.Shooter.SHOOTER_SPEED_AUTO) {
-						double s = robot.turret.getSidewaysDistance();
-						double v = robot.turret.getVerticalDistance();
+			//Shoot - TURRET
+			if(robot.aimMode==Constants.General.AimMode.TURRET) {
+				//Spin flywheel and adjust hood based on distances
+				if (gamepad1.right_trigger >= Constants.General.CONTROLLER_DEADBAND) {
+					//Get vertical and horizontal distances from target
+					double s = robot.turret.getSidewaysDistance();
+					double v = robot.turret.getVerticalDistance();
 
-						double velocity = 977.89 - 0.4284 * v - 0.2965 * s;
-						double hoodAngle = 0.0703 + 0.01604 * v + 0.003832 * s;
-
-						robot.shooter.setShotVelocity(velocity);
-						robot.shooter.setHoodPosition(hoodAngle);
-					}
+					//Set shooter velocity and hood positions
+					robot.shooter.setShotVelocityUsingDistancesFromTarget(s, v);
+					robot.shooter.setHoodPositionUsingDistancesFromTarget(s, v);
 
 					robot.shooter.spinFlywheel();
-					robot.shooter.spinCounter();
-					shooterDelay.reset();
-					shooterFlag=true;
 
-					//Aim Mode is Turn to Target
-					if(robot.aimMode==Constants.General.AimMode.TURN) {
-						robot.drive.setHeadingTarget(Math.toRadians(robot.turret.getHeadingToTarget()));
+					if (gamepad1.left_trigger >= Constants.General.CONTROLLER_DEADBAND && (shooterFlag || (robot.shooter.speedWithinError() && robot.turret.headingWithinError()))) {
+						robot.shooter.openGate();
+						robot.indexer.shootSpeed();
+						shooterFlag=true;
+					} else {
+						robot.shooter.closeGate();
+						robot.indexer.stop();
+						shooterFlag=false;
 					}
 
-					//Spun up - open gate and index
-				} else if(shooterDelay.time()>1.0 && robot.shooter.speedWithinError() && (robot.aimMode!=Constants.General.AimMode.TURN || (robot.drive.follower.velocity().omega<0.2 && robot.drive.getHeadingErrorInDegrees()<5))) {
-					robot.shooter.openGate();
-					robot.indexer.shootSpeed();
-					telemetry.addLine("Opened gate");
+				} else {
+					robot.shooter.stopFlywheel();
+
+					if(shooterFlag) {
+						robot.shooter.closeGate();
+						robot.indexer.stop();
+						shooterFlag = false;
+					}
 				}
 
-				if(Constants.General.DEBUG_MODE) {
-					telemetry.addData("Shoot - target=", robot.shooter.getTargetVelocity());
-					telemetry.addData("Shoot - comp target=", "%.1f", robot.shooter.getCompensatedTargetVelocity());
-					telemetry.addData("Shoot - actual=", robot.shooter.getVelocity());
-					telemetry.addData("Shoot - rest voltage=", "%.2f V", robot.shooter.getBatteryVoltage());
-					telemetry.addData("Shoot - raw voltage=", "%.2f V", robot.shooter.getRawBatteryVoltage());
-				}
+			//Shoot - TURN/MANUAL
+			} else {
 
-			} else if(shooterFlag) {
-				shooterFlag=false;
-				robot.shooter.stopFlywheel();
-				robot.shooter.stopCounter();
-				robot.indexer.reverse();
-				resetShooterFlag=true;
-				resetShooterDelay.reset();
+				if (gamepad1.right_trigger >= Constants.General.CONTROLLER_DEADBAND) {
+					//Start spinning flywheel
+					if (!shooterFlag) {
+						//Set shooter speed and hood angle based on vertical and sideways distances
+						if (Constants.Shooter.SHOOTER_SPEED_AUTO) {
+							//Get vertical and horizontal distances from target
+							double s = robot.turret.getSidewaysDistance();
+							double v = robot.turret.getVerticalDistance();
 
-			} else if(resetShooterFlag) {
-				//Stop indexing reverse and close ball gate
-				if(resetShooterDelay.time()>1.0) {
-					robot.shooter.closeGate();
-					robot.indexer.stop();
-					resetShooterFlag=false;
+							//Set shooter velocity and hood positions
+							robot.shooter.setShotVelocityUsingDistancesFromTarget(s, v);
+							robot.shooter.setHoodPositionUsingDistancesFromTarget(s, v);
+						}
+
+						robot.shooter.spinFlywheel();
+						shooterDelay.reset();
+						shooterFlag = true;
+
+						//Aim Mode is Turn to Target
+						if (robot.aimMode == Constants.General.AimMode.TURN) {
+							robot.drive.setHeadingTarget(Math.toRadians(robot.turret.getHeadingToTarget()));
+						}
+
+						//Minor speed/heading corrections
+					} else
+						if (shooterDelay.time() > 0.5 && shooterDelay.time() < 1.0 && loopCnt % 5 == 0) {
+							if (Constants.Shooter.SHOOTER_SPEED_AUTO) {
+								//Get vertical and horizontal distances from target
+								double s = robot.turret.getSidewaysDistance();
+								double v = robot.turret.getVerticalDistance();
+
+								//Set shooter velocity and hood positions
+								robot.shooter.setShotVelocityUsingDistancesFromTarget(s, v);
+								robot.shooter.setHoodPositionUsingDistancesFromTarget(s, v);
+							}
+
+							//Aim Mode is Turn to Target
+							if (robot.aimMode == Constants.General.AimMode.TURN) {
+								robot.drive.setHeadingTarget(Math.toRadians(robot.turret.getHeadingToTarget()));
+							}
+
+							//Spun up - open gate and index
+						} else
+							if (shooterDelay.time() > 1.0 && robot.shooter.speedWithinError() && (robot.aimMode != Constants.General.AimMode.TURN || (robot.drive.follower.velocity().omega < 0.1 && robot.drive.getHeadingErrorInDegrees() < 5))) {
+								robot.shooter.openGate();
+								robot.indexer.shootSpeed();
+								telemetry.addLine("Opened gate");
+							}
+
+					if (Constants.General.DEBUG_MODE) {
+						telemetry.addData("Shoot - target=", robot.shooter.getTargetVelocity());
+						telemetry.addData("Shoot - comp target=", "%.1f", robot.shooter.getCompensatedTargetVelocity());
+						telemetry.addData("Shoot - actual=", robot.shooter.getVelocity());
+						telemetry.addData("Shoot - rest voltage=", "%.2f V", robot.shooter.getBatteryVoltage());
+						telemetry.addData("Shoot - raw voltage=", "%.2f V", robot.shooter.getRawBatteryVoltage());
+					}
+
+				} else if (shooterFlag) {
+					shooterFlag = false;
+					robot.shooter.stopFlywheel();
+					robot.indexer.reverse();
+					resetShooterFlag = true;
+					resetShooterDelay.reset();
+				} else
+					if (resetShooterFlag) {
+						//Stop indexing reverse and close ball gate
+						if (resetShooterDelay.time() > 1.0) {
+							robot.shooter.closeGate();
+							robot.indexer.stop();
+							resetShooterFlag = false;
+						}
 				}
 			}
 
@@ -214,14 +266,14 @@ public class ManualBase extends LinearOpMode {
 
 			//Intake
 			if(gamepad1.right_trigger<=Constants.General.CONTROLLER_DEADBAND && !resetShooterFlag && !shooterFlag) {
-				if (gamepad2.right_trigger>=Constants.General.CONTROLLER_DEADBAND || (driverOnly && gamepad1.left_trigger>=Constants.General.CONTROLLER_DEADBAND)) {
+				if (gamepad2.right_trigger>=Constants.General.CONTROLLER_DEADBAND || (driverOnly && gamepad1.b)) {
 					robot.intake.intake();
 					robot.indexer.intakeSpeed();
 					intakeFlag = true;
 
 				//Expel
 				} else
-					if (gamepad2.left_trigger >= Constants.General.CONTROLLER_DEADBAND || (driverOnly && gamepad1.right_bumper)) {
+					if (gamepad2.left_trigger >= Constants.General.CONTROLLER_DEADBAND || (driverOnly && gamepad1.y)) {
 						robot.intake.expel();
 						intakeFlag = false;
 
@@ -245,36 +297,19 @@ public class ManualBase extends LinearOpMode {
 			}
 
 			//------------------------------------------
-			//HOOD
-
-			/*
-			if(gamepad1.dpadUpWasPressed()) {
-				robot.shooter.
-			} else if(gamepad1.dpadDownWasPressed()) {
-
-			}
-			*/
-
-			//------------------------------------------
 			//TURRETS
 
-			//Temp: Keep turret at zero (every 20 loops)
-			if(loopCnt%20==0) {
+			//Auto-aim turret
+			if(robot.aimMode==Constants.General.AimMode.TURRET) {
+				//Enable only when not in center
+				if(robot.drive.follower.pose().y()<48.0 || robot.drive.follower.pose().y()>92.0) {
+					robot.turret.turnToTarget();
+				}
+
+			//Non-turret mode - keep turret at zero (every 20 loops)
+			} else if(robot.aimMode!=Constants.General.AimMode.TURRET && loopCnt%20==0) {
 				robot.turret.turnToZero();
 			}
-
-			/*
-			if(gamepad2.back) {
-				robot.turret.turnToDegrees(0.0);
-				disableTurrets=true;
-			}
-			*/
-
-			/*
-			if(!disableTurrets) {
-				robot.turret.turnToTarget();
-			}
-			*/
 
 			//------------------------------------------
 			//Telemetry

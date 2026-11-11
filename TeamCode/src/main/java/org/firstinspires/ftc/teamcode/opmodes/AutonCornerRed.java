@@ -7,8 +7,6 @@ import static com.pedropathing.ivy.commands.Commands.waitMs;
 import static com.pedropathing.ivy.groups.Groups.sequential;
 import static com.pedropathing.ivy.pedro.PedroCommands.follow;
 
-import static org.firstinspires.ftc.teamcode.utility.MathUtility.translateRedPoseToBlue;
-
 import com.pedropathing.api.PoseFactory;
 import com.pedropathing.ivy.Command;
 import com.pedropathing.ivy.Scheduler;
@@ -21,10 +19,10 @@ import org.firstinspires.ftc.teamcode.Constants;
 import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.utility.PoseStorage;
 
-@Autonomous(name="[A] BLUE-Default", preselectTeleOp = "BLUE-Manual")
-public class AutonDefaultBlue extends AutonDefaultBase {
+@Autonomous(name="[A] RED-Corner Shot", preselectTeleOp = "RED-Manual")
+public class AutonCornerRed extends AutonCornerBase {
 	@Override
 	protected void updateSettings() {
-		thisAlliance = Constants.General.Alliance.BLUE;
+		thisAlliance = Constants.General.Alliance.RED;
 	}
 }

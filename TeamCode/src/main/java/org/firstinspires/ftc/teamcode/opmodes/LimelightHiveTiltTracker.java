@@ -27,7 +27,7 @@ public class LimelightHiveTiltTracker extends LinearOpMode {
 		telemetry.update();
 
 		telemetry.setMsTransmissionInterval(11);
-		limelight.pipelineSwitch(1); // Ensure index 1 matches your AprilTag pipeline
+		limelight.pipelineSwitch(0); // Ensure index 0 matches your AprilTag pipeline
 		limelight.start();
 
 		telemetry.addData("Status", "Ready! Press Play.");

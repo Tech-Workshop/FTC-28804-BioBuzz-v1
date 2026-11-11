@@ -17,6 +17,7 @@ public class Ramp {
 		UNKNOWN,
 		UP,
 		DOWN,
+		AGITATE,
 		MOVING
 	}
 
@@ -49,10 +50,19 @@ public class Ramp {
 		}
 	}
 
+	public void agitate() {
+		rampTarget = Constants.Ramp.RAMP_AGITATE_POS;
+		if(Math.abs(rampTarget-rampPos)>=0.01) {
+			rampStatus= RAMP_STATUS.MOVING;
+		}
+	}
+
 	public void periodic() {
 		if(Math.abs(rampTarget-rampPos)<0.01) {
 			if(rampTarget==Constants.Ramp.RAMP_DOWN_POS) {
 				rampStatus = RAMP_STATUS.DOWN;
+			} else if(rampTarget==Constants.Ramp.RAMP_AGITATE_POS) {
+				rampStatus = RAMP_STATUS.AGITATE;
 			} else {
 				rampStatus = RAMP_STATUS.UP;
 			}

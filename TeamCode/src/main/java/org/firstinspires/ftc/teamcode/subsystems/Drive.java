@@ -71,6 +71,7 @@ public class Drive {
 
 	public void overridePose(Pose pose) {
 		follower.setPose(pose);
+		follower.update();
 		headingTarget=pose.heading();
 	}
 
@@ -159,6 +160,7 @@ public class Drive {
 			);
 		}
 
+		//ManualDrive.driveOrHold(follower,powers); //Should auto-hold position when not touching analog sticks, but messes with relocaliation
 		follower.manual(powers);
 		follower.update();
 

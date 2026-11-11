@@ -26,5 +26,7 @@ public class AutonFlowerBlue extends AutonFlowerBase {
 	@Override
 	protected void updateSettings() {
 		thisAlliance = Constants.General.Alliance.BLUE;
+		limelightUpPipeline=2;
+		limelightDownPipeline=3;
 	}
 }

@@ -9,6 +9,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 
+@Disabled
 @TeleOp(group = "UTILITY",name="Utility: Pinpoint Test")
 public class UtilityPinpoint extends LinearOpMode {
 	private GoBildaPinpointDriver pinpoint;
@@ -53,6 +54,4 @@ public class UtilityPinpoint extends LinearOpMode {
 
 		pinpoint.resetPosAndIMU();
 	}
-
-
 }

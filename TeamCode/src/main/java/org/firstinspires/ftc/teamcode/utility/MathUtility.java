@@ -41,6 +41,16 @@ public class MathUtility {
 		return angle;
 	}
 
+	public static double normalizeAngleDegrees(double degrees) {
+		double h = degrees % 360.0;   // now in (-360, 360)
+		if (h > 180.0) {
+			h -= 360.0;
+		} else if (h <= -180.0) {
+			h += 360.0;
+		}
+		return h;
+	}
+
 	public static double getCorrectedImuHeading(double imuHeadingRadians, double imuOffsetRadians) {
 		double correctedHeadingRadians = imuHeadingRadians + imuOffsetRadians;
 		if (correctedHeadingRadians > Math.PI) {

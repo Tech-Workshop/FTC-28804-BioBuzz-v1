@@ -9,7 +9,7 @@ import org.firstinspires.ftc.teamcode.Constants;
 
 @TeleOp(group = "UTILITY",name="Utility: Motors Test")
 public class UtilityMotors extends LinearOpMode {
-	private DcMotorEx leftFrontDrive,leftBackDrive,rightFrontDrive,rightBackDrive,shooter,shooterCounter,intake,indexer;
+	private DcMotorEx leftFrontDrive,leftBackDrive,rightFrontDrive,rightBackDrive,shooterLeft,shooterRight,shooterCounter,intake,indexer;
 	double shooterCounterPower=0.50,indexerPower=0.50;
 
 	@Override
@@ -19,15 +19,22 @@ public class UtilityMotors extends LinearOpMode {
 		rightFrontDrive = hardwareMap.get(DcMotorEx.class, Constants.Drive.DRIVE_RIGHT_FRONT_ID);
 		rightBackDrive = hardwareMap.get(DcMotorEx.class, Constants.Drive.DRIVE_RIGHT_BACK_ID);
 
-		shooter = hardwareMap.get(DcMotorEx.class, Constants.Shooter.SHOOTER_ID);
-		shooter.setDirection(Constants.Shooter.SHOOTER_DIRECTION);
-		shooter.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-		shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+		shooterLeft = hardwareMap.get(DcMotorEx.class, Constants.Shooter.SHOOTER_LEFT_ID);
+		shooterLeft.setDirection(Constants.Shooter.SHOOTER_LEFT_DIRECTION);
+		shooterLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+		shooterLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
+		shooterRight = hardwareMap.get(DcMotorEx.class, Constants.Shooter.SHOOTER_RIGHT_ID);
+		shooterRight.setDirection(Constants.Shooter.SHOOTER_RIGHT_DIRECTION);
+		shooterRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+		shooterRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+		/*
 		shooterCounter = hardwareMap.get(DcMotorEx.class, Constants.Shooter.SHOOTER_COUNTER_ID);
 		shooterCounter.setDirection(Constants.Shooter.SHOOTER_COUNTER_DIRECTION);
 		shooterCounter.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 		shooterCounter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+		*/
 
 		intake = hardwareMap.get(DcMotorEx.class, Constants.Intake.INTAKE_ID);
 		intake.setDirection(Constants.Intake.INTAKE_DIRECTION);
@@ -38,6 +45,7 @@ public class UtilityMotors extends LinearOpMode {
 
 		while (opModeIsActive() && !isStopRequested()) {
 
+			/*
 			if(gamepad1.a) {
 				leftFrontDrive.setPower(0.2);
 				leftBackDrive.setPower(0.2);
@@ -49,7 +57,9 @@ public class UtilityMotors extends LinearOpMode {
 				rightFrontDrive.setPower(0.0);
 				rightBackDrive.setPower(0.0);
 			}
+			*/
 
+			/*
 			if(gamepad1.dpad_up && shooterCounterPower<1.0) {
 				shooterCounterPower+=0.001;
 			} else if(gamepad1.dpad_down && shooterCounterPower>0.0) {
@@ -63,13 +73,14 @@ public class UtilityMotors extends LinearOpMode {
 				//shooter.setVelocity(0);
 				shooterCounter.setPower(0.0);
 			}
+			*/
 
 			if(gamepad1.x) {
-				shooter.setVelocity(1450);
-				//shooterCounter.setPower(0.80);
+				shooterLeft.setVelocity(1100);
+				shooterRight.setVelocity(1100);
 			} else {
-				shooter.setVelocity(0);
-				//shooterCounter.setPower(0.0);
+				shooterLeft.setVelocity(0);
+				shooterRight.setVelocity(0);
 			}
 
 			if(gamepad1.right_bumper) {
@@ -90,14 +101,10 @@ public class UtilityMotors extends LinearOpMode {
 				indexer.setPower(0.0);
 			}
 
-			telemetry.addData("Counter Power:",shooterCounterPower);
-			telemetry.addData("Counter Velocity:",shooterCounter.getVelocity());
-
 			telemetry.addData("Indexer Power:",indexerPower);
 			telemetry.addData("Indexer Velocity",indexer.getVelocity());
 
-			telemetry.addData("Shooter Velocity:",shooter.getVelocity());
-			telemetry.addData("Counter Velocity:",shooterCounter.getVelocity());
+			telemetry.addData("Shooter Velocity:",shooterLeft.getVelocity());
 			telemetry.addData("Intake Velocity",intake.getVelocity());
 			telemetry.update();
 		}

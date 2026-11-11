@@ -38,11 +38,17 @@ public class UtilityServo extends LinearOpMode {
 			//------------------------------------------------------
 			//TURRET
 
-			//Turret - Reset to 50%
+			//Turret - Reset to Zero
 			if(gamepad1.a) {
-				turretRight.setPosition(0.50);
-				turretLeft.setPosition(0.50);
-				turretPos=0.5000;
+				turretPos=0.50;
+				turretRight.setPosition(turretPos);
+				turretLeft.setPosition(turretPos);
+
+				/*
+				turretRight.setPosition(Constants.Turret.TURRET_ZERO_POS);
+				turretLeft.setPosition(Constants.Turret.TURRET_ZERO_POS);
+				turretPos=Constants.Turret.TURRET_ZERO_POS;
+				*/
 			}
 
 			//Turret - Tuning
@@ -60,7 +66,7 @@ public class UtilityServo extends LinearOpMode {
 				}
 			}
 
-			telemetry.addLine("Turrets (Reset 50%) - Press A");
+			telemetry.addLine("Turrets (Reset to Zero) - Press A");
 			telemetry.addLine("Turrets (Tuning) - D-Pad Right/Left");
 			telemetry.addData("Turrets (Pos):",turretPos);
 

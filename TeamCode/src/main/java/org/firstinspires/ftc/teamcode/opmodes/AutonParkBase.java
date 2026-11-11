@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode.opmodes;
 
 import static com.pedropathing.ivy.Scheduler.schedule;
+import static com.pedropathing.ivy.commands.Commands.conditional;
+import static com.pedropathing.ivy.commands.Commands.waitMs;
 import static com.pedropathing.ivy.groups.Groups.sequential;
 import static com.pedropathing.ivy.pedro.PedroCommands.follow;
 
@@ -18,20 +20,37 @@ import org.firstinspires.ftc.teamcode.Robot;
 import org.firstinspires.ftc.teamcode.utility.PoseStorage;
 import org.firstinspires.ftc.teamcode.utility.PathUtility;
 
+import java.util.Objects;
+
 public class AutonParkBase extends OpMode {
 
 	private final Robot robot = Robot.getInstance();
 	private final PoseFactory poseFactory = PoseFactory.degrees();
 
+	private String optionDelay="NO";
+	private String optionSide="LEFT";
+
 	//Path points, defined from RED alliance
 	private final Pose startPose = poseFactory.of(9.8, 131.5, 0);
-	private final Pose parkPose = poseFactory.of(15, 119, 0);
+	private final Pose parkPoseLeft = poseFactory.of(12.0, 119.0, 0);
+	private final Pose parkPoseRight = poseFactory.of(12.0, 89.0, 0);
 
-	public Path path1() { return PathUtility.linearPath(startPose,parkPose,thisAlliance); } //line(start, path1).linear(start, path1);
+	public Path path1a() { return PathUtility.linearPath(startPose,parkPoseLeft,thisAlliance); } //line(start, path1).linear(start, path1);
+	public Path path1b() { return PathUtility.linearPath(startPose,parkPoseRight,thisAlliance); } //line(start, path1).linear(start, path1);
 
 	private Command autoRoutine() {
 		return sequential(
-			follow(robot.drive.follower, path1())
+			conditional(
+				()->optionDelayIsNo(),
+				waitMs(0),
+				waitMs(27000)
+			),
+
+			conditional(
+				()->optionSideIsLeft(),
+				follow(robot.drive.follower, path1a()),
+				follow(robot.drive.follower, path1b())
+			)
 		);
 	}
 
@@ -58,6 +77,31 @@ public class AutonParkBase extends OpMode {
 	}
 
 	@Override
+	public void init_loop() {
+		if(gamepad1.aWasPressed()) {
+			if(Objects.equals(optionSide, "LEFT")) {
+				optionSide="RIGHT";
+			} else {
+				optionSide="LEFT";
+			}
+		}
+		if(gamepad1.bWasPressed()) {
+			if(Objects.equals(optionDelay, "NO")) {
+				optionDelay="YES";
+			} else {
+				optionDelay="NO";
+			}
+		}
+
+		telemetry.addLine("Park Auton Options");
+		telemetry.addLine("----------------------");
+		telemetry.addData("Park Side (A/X):",optionSide);
+		telemetry.addData("Delay (B/O):",optionDelay);
+		telemetry.addLine("----------------------");
+		telemetry.update();
+	}
+
+	@Override
 	public void start() {
 		//Schedule autonomous routine
 		schedule(autoRoutine());
@@ -73,5 +117,13 @@ public class AutonParkBase extends OpMode {
 
 		//Save pose
 		PoseStorage.currentPose = robot.drive.follower.pose();
+	}
+
+	public boolean optionDelayIsNo() {
+		return Objects.equals(optionDelay, "NO");
+	}
+
+	public boolean optionSideIsLeft() {
+		return Objects.equals(optionSide, "LEFT");
 	}
 }

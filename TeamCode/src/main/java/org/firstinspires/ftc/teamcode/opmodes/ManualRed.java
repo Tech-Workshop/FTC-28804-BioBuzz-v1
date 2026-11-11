@@ -11,6 +11,7 @@ public class ManualRed extends ManualBase {
 	protected void updateSettings() {
 		thisAlliance = Constants.General.Alliance.RED;
 		defaultStart=new Pose(8.8,133.6,Math.toRadians(0.0));
-		overridePose=new Pose(72.0, 72.0, Math.toRadians(0.0));
+		//overridePose=new Pose(8.8,133.6, Math.toRadians(0.0));
+		overridePose=new Pose(8.5,57.6, Math.toRadians(0.0));
 	}
 }

@@ -1,8 +1,5 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
-import static org.firstinspires.ftc.teamcode.Constants.Shooter.SHOOTER_COUNTER_PID_kP;
-import static org.firstinspires.ftc.teamcode.Constants.Shooter.SHOOTER_COUNTER_PID_kS;
-import static org.firstinspires.ftc.teamcode.Constants.Shooter.SHOOTER_COUNTER_PID_kV;
 import static org.firstinspires.ftc.teamcode.Constants.Shooter.SHOOTER_PID_kP;
 import static org.firstinspires.ftc.teamcode.Constants.Shooter.SHOOTER_PID_kS;
 import static org.firstinspires.ftc.teamcode.Constants.Shooter.SHOOTER_PID_kV;
@@ -18,30 +15,28 @@ import org.firstinspires.ftc.teamcode.Constants;
 
 public class Shooter {
 	private final HardwareMap hardwareMap;
-	private final DcMotorEx shooterMotor,counterMotor;
+	private final DcMotorEx shooterLeftMotor,shooterRightMotor;
 	private final Servo ballstopServo,hoodServo;
 	private final Telemetry telemetry;
 
-	private double ballstopClosedPos,ballstopOpenPos,shotVelocity,counterVelocity;
-	private double targetVelocity=0.0,targetCounterVelocity=0.0;
+	private double ballstopClosedPos,ballstopOpenPos,shotVelocity;
+	private double targetVelocity=0.0;
 	private double rampRate=Constants.Shooter.SHOOTER_RAMP_RATE;
 	private double hoodPos=Constants.Shooter.HOOD_DEFAULT;
-	private double rampCounterRate=Constants.Shooter.SHOOTER_COUNTER_RAMP_RATE;
-	private double lastPower=0.0,lastCounterPower=0.0; //Used for power ramping
+	private double lastPower=0.0; //Used for power ramping
 	private double restingBatteryVoltage=Constants.Shooter.NOMINAL_VOLTAGE;
 
 	public Shooter(HardwareMap hardwareMap, Telemetry telemetry) {
 		this.hardwareMap = hardwareMap;
 
-		//Get shooter
-		this.shooterMotor = hardwareMap.get(DcMotorEx.class, Constants.Shooter.SHOOTER_ID);
-		shooterMotor.setDirection(Constants.Shooter.SHOOTER_DIRECTION);
-		shotVelocity=Constants.Shooter.SHOOTER_VELOCITY;
+		//Get shooters
+		this.shooterLeftMotor = hardwareMap.get(DcMotorEx.class, Constants.Shooter.SHOOTER_LEFT_ID);
+		shooterLeftMotor.setDirection(Constants.Shooter.SHOOTER_LEFT_DIRECTION);
 
-		//Get counter roller
-		this.counterMotor = hardwareMap.get(DcMotorEx.class, Constants.Shooter.SHOOTER_COUNTER_ID);
-		counterMotor.setDirection(Constants.Shooter.SHOOTER_COUNTER_DIRECTION);
-		counterVelocity=Constants.Shooter.SHOOTER_COUNTER_VELOCITY;
+		this.shooterRightMotor = hardwareMap.get(DcMotorEx.class, Constants.Shooter.SHOOTER_RIGHT_ID);
+		shooterRightMotor.setDirection(Constants.Shooter.SHOOTER_RIGHT_DIRECTION);
+
+		shotVelocity=Constants.Shooter.SHOOTER_VELOCITY;
 
 		//Get ball stop
 		this.ballstopServo = hardwareMap.get(Servo.class, Constants.Shooter.BALLSTOP_ID);
@@ -75,22 +70,10 @@ public class Shooter {
 		setTargetVelocity(velocity);
 	}
 
-	public void spinCounter() {
-		setCounterTargetVelocity(counterVelocity);
-	}
-
-	public void spinCounterAtVelocity(double velocity) {
-		setCounterTargetVelocity(velocity);
-	}
-
 	public void stopFlywheel() {
 		setTargetVelocity(0.0);
-		shooterMotor.setPower(0.0);
-	}
-
-	public void stopCounter() {
-		setCounterTargetVelocity(0.0);
-		counterMotor.setPower(0.0);
+		shooterLeftMotor.setPower(0.0);
+		shooterRightMotor.setPower(0.0);
 	}
 
 	public double getTargetVelocity() {
@@ -99,7 +82,20 @@ public class Shooter {
 
 	public void setShotVelocity(double velocity) {
 		shotVelocity=velocity;
-		counterVelocity=velocity*1.415;
+	}
+
+	public double getShotVelocity() {
+		return shotVelocity;
+	}
+
+	public void adjustShotVelocity(double increment) {
+		setShotVelocity(shotVelocity+increment);
+	}
+
+	//s=sideways distance from target, v=vertical distance from target
+	public void setShotVelocityUsingDistancesFromTarget(double s, double v) {
+		double velocity = 1529.77 + 2.583 * v - 0.13931 * s + 0.06297 * s * s; //Formula from Claude, given optimized observed values
+		setShotVelocity(velocity);
 	}
 
 	public void setTargetVelocity(double velocity) {
@@ -107,19 +103,7 @@ public class Shooter {
 	}
 
 	public double getVelocity() {
-		return shooterMotor.getVelocity();
-	}
-
-	public double getCounterTargetVelocity() {
-		return targetCounterVelocity;
-	}
-
-	public void setCounterTargetVelocity(double velocity) {
-		targetCounterVelocity=velocity;
-	}
-
-	public double getCounterVelocity() {
-		return counterMotor.getVelocity();
+		return shooterLeftMotor.getVelocity();
 	}
 
 	public double getRawBatteryVoltage() {
@@ -174,10 +158,6 @@ public class Shooter {
 		return getVoltageCompensatedVelocity(targetVelocity);
 	}
 
-	public double getCompensatedCounterTargetVelocity() {
-		return getVoltageCompensatedVelocity(targetCounterVelocity);
-	}
-
 	public void lowerHood() {
 		if(hoodPos>Constants.Shooter.HOOD_MIN)  {
 			hoodPos-=0.01;
@@ -199,13 +179,21 @@ public class Shooter {
 		hoodServo.setPosition(Math.clamp(position,Constants.Shooter.HOOD_MIN,Constants.Shooter.HOOD_MAX));
 	}
 
+	public void setHoodPositionUsingDistancesFromTarget(double s, double v) {
+		double position = 0.36150 + 0.000715 * v - 0.004788 * s + 0.00001349 * s * s + 0.0001978 * v * s;
+		position=Math.clamp(position,Constants.Shooter.HOOD_MIN,Constants.Shooter.HOOD_MAX);
+		setHoodPosition(position);
+	}
+
 	public void periodic() {
 		updateBatteryVoltage();
 
-		if (telemetry != null) {
+		if (telemetry != null && Constants.General.DEBUG_MODE) {
 			telemetry.addData("Shooter Rest Voltage", "%.2f V", getBatteryVoltage());
 			telemetry.addData("Shooter Raw Voltage", "%.2f V", getRawBatteryVoltage());
 		}
+
+		telemetry.addData("Shooter Subsystem Target:",targetVelocity);
 
 		if(targetVelocity>0) {
 			double effectiveTarget=targetVelocity;
@@ -222,26 +210,8 @@ public class Shooter {
 			lastPower=shooterPower;
 
 			//Set motor power
-			shooterMotor.setPower(shooterPower);
-		}
-
-		if(targetCounterVelocity>0) {
-			double effectiveCounterTarget=targetCounterVelocity;
-			if(Constants.Shooter.ENABLE_VOLTAGE_COMPENSATION) {
-				effectiveCounterTarget = getCompensatedCounterTargetVelocity();
-				telemetry.addData("Counter Comp Target", "%.1f", effectiveCounterTarget);
-			}
-
-			double counterPower=clamp(counterPIDCalculate(getCounterVelocity(),effectiveCounterTarget),0,1);
-
-			//Ramp power
-			if(rampRate>0.0 && counterPower>lastCounterPower) {
-				counterPower=clamp(counterPower,lastCounterPower-rampCounterRate,lastCounterPower+rampCounterRate);
-			}
-			lastCounterPower=counterPower;
-
-			//Set motor power
-			counterMotor.setPower(counterPower);
+			shooterLeftMotor.setPower(shooterPower);
+			shooterRightMotor.setPower(shooterPower);
 		}
 	}
 
@@ -250,13 +220,6 @@ public class Shooter {
 		double error=goalVelocity-currentVelocity;
 
 		return (error*SHOOTER_PID_kP)+feedForward;
-	}
-
-	public double counterPIDCalculate(double currentVelocity,double goalVelocity) {
-		double feedForward=(SHOOTER_COUNTER_PID_kV*goalVelocity)+SHOOTER_COUNTER_PID_kS;
-		double error=goalVelocity-currentVelocity;
-
-		return (error*SHOOTER_COUNTER_PID_kP)+feedForward;
 	}
 
 	public boolean speedWithinError() {
