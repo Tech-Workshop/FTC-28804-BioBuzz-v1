@@ -5,12 +5,14 @@ import com.qualcomm.hardware.limelightvision.LLStatus;
 import com.qualcomm.hardware.limelightvision.Limelight3A;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.LED;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.Constants;
 
 public class Sensors {
-	private final DigitalChannel beamBreakSensor,ledLeftGreen,ledLeftRed,ledRightGreen,ledRightRed;
+	private final DigitalChannel beamBreakSensor;
+	private final LED ledLeftGreen,ledLeftRed,ledRightGreen,ledRightRed;
 	private final Limelight3A limelight;
 	private final Telemetry telemetry;
 
@@ -21,14 +23,10 @@ public class Sensors {
 		this.beamBreakSensor=hardwareMap.get(DigitalChannel.class, Constants.Sensors.BEAM_BREAK_ID);
 		beamBreakSensor.setMode(DigitalChannel.Mode.INPUT);
 
-		this.ledLeftGreen=hardwareMap.get(DigitalChannel.class, Constants.Sensors.LED_LEFT_GREEN_ID);
-		ledLeftGreen.setMode(DigitalChannel.Mode.OUTPUT);
-		this.ledLeftRed=hardwareMap.get(DigitalChannel.class, Constants.Sensors.LED_LEFT_RED_ID);
-		ledLeftRed.setMode(DigitalChannel.Mode.OUTPUT);
-		this.ledRightGreen=hardwareMap.get(DigitalChannel.class, Constants.Sensors.LED_RIGHT_GREEN_ID);
-		ledRightGreen.setMode(DigitalChannel.Mode.OUTPUT);
-		this.ledRightRed=hardwareMap.get(DigitalChannel.class, Constants.Sensors.LED_RIGHT_RED_ID);
-		ledRightRed.setMode(DigitalChannel.Mode.OUTPUT);
+		this.ledLeftGreen=hardwareMap.get(LED.class, Constants.Sensors.LED_LEFT_GREEN_ID);
+		this.ledLeftRed=hardwareMap.get(LED.class, Constants.Sensors.LED_LEFT_RED_ID);
+		this.ledRightGreen=hardwareMap.get(LED.class, Constants.Sensors.LED_RIGHT_GREEN_ID);
+		this.ledRightRed=hardwareMap.get(LED.class, Constants.Sensors.LED_RIGHT_RED_ID);
 
 		this.limelight = hardwareMap.get(Limelight3A.class, Constants.Sensors.LIMELIGHT_ID);
 
@@ -88,24 +86,24 @@ public class Sensors {
 	}
 
 	public void setLedDisable() {
-		ledLeftGreen.setState(false);
-		ledLeftRed.setState(false);
-		ledRightGreen.setState(false);
-		ledRightRed.setState(false);
+		ledLeftGreen.off();
+		ledLeftRed.off();
+		ledRightGreen.off();
+		ledRightRed.off();
 	}
 
 	public void setLedGreen() {
-		ledLeftGreen.setState(true);
-		ledLeftRed.setState(false);
-		ledRightGreen.setState(true);
-		ledRightRed.setState(false);
+		ledLeftGreen.on();
+		ledLeftRed.off();
+		ledRightGreen.on();
+		ledRightRed.off();
 	}
 
 	public void setLedRed() {
-		ledLeftGreen.setState(false);
-		ledLeftRed.setState(true);
-		ledRightGreen.setState(false);
-		ledRightRed.setState(true);
+		ledLeftGreen.off();
+		ledLeftRed.on();
+		ledRightGreen.off();
+		ledRightRed.on();
 	}
 
 	public boolean getBeamBreakState() {

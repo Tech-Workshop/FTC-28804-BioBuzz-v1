@@ -16,7 +16,7 @@ public class ManualBase extends LinearOpMode {
 
 	boolean firstLoop=true, disableTurrets=false, driverOnly=false;
 	int loopCnt=0;
-	double shooterTarget=1650;
+	double shooterTarget=1650,loopTimeLast=0.0;
 
 	ElapsedTime shooterDelay=new ElapsedTime();
 	ElapsedTime resetShooterDelay=new ElapsedTime();
@@ -151,7 +151,7 @@ public class ManualBase extends LinearOpMode {
 			//Shoot - TURRET
 			if(robot.aimMode==Constants.General.AimMode.TURRET) {
 				//Spin flywheel and adjust hood based on distances
-				if (gamepad1.right_trigger >= Constants.General.CONTROLLER_DEADBAND) {
+				if (gamepad1.left_trigger >= Constants.General.CONTROLLER_DEADBAND) {
 					//Get vertical and horizontal distances from target
 					double s = robot.turret.getSidewaysDistance();
 					double v = robot.turret.getVerticalDistance();
@@ -162,7 +162,7 @@ public class ManualBase extends LinearOpMode {
 
 					robot.shooter.spinFlywheel();
 
-					if (gamepad1.left_trigger >= Constants.General.CONTROLLER_DEADBAND && (shooterFlag || (robot.shooter.speedWithinError() && robot.turret.headingWithinError()))) {
+					if (gamepad1.right_trigger >= Constants.General.CONTROLLER_DEADBAND && (shooterFlag || (robot.shooter.speedWithinError() && robot.turret.headingWithinError()))) {
 						robot.shooter.openGate();
 						robot.indexer.shootSpeed();
 						shooterFlag=true;
@@ -301,8 +301,8 @@ public class ManualBase extends LinearOpMode {
 
 			//Auto-aim turret
 			if(robot.aimMode==Constants.General.AimMode.TURRET) {
-				//Enable only when not in center
-				if(robot.drive.follower.pose().y()<48.0 || robot.drive.follower.pose().y()>92.0) {
+				//Enable only when not in center and driver is ramping up shooter
+				if(gamepad1.left_trigger >= Constants.General.CONTROLLER_DEADBAND && (robot.drive.follower.pose().y()<48.0 || robot.drive.follower.pose().y()>92.0)) {
 					robot.turret.turnToTarget();
 				}
 
@@ -317,7 +317,11 @@ public class ManualBase extends LinearOpMode {
 			telemetry.addData("PP (y)",robot.drive.follower.pose().y());
 			telemetry.addData("PP (heading-deg)",Math.toDegrees(robot.drive.follower.pose().heading()));
 
+			double loopTimeNow = System.nanoTime();
+			telemetry.addData("Loop Speed (hz): ", 1000000000 / (loopTimeNow - loopTimeLast));
 			telemetry.update();
+
+			loopTimeLast = loopTimeNow; //Save timer for loop time calculation
 			loopCnt++;
 		}
 	}
