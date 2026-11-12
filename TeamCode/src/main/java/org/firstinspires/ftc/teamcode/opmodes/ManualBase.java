@@ -16,7 +16,7 @@ public class ManualBase extends LinearOpMode {
 
 	boolean firstLoop=true, disableTurrets=false, driverOnly=false;
 	int loopCnt=0;
-	double shooterTarget=1650,loopTimeLast=0.0;
+	double shooterTarget=1650,loopTimeLast=0.0,shooterCorrection=0.0;
 
 	ElapsedTime shooterDelay=new ElapsedTime();
 	ElapsedTime resetShooterDelay=new ElapsedTime();
@@ -127,6 +127,20 @@ public class ManualBase extends LinearOpMode {
 			//------------------------------------------
 			//SHOOTER
 
+			//Manually set correction
+			/*
+			if(gamepad1.dpadRightWasPressed()) {
+				shooterCorrection+=10;
+				robot.shooter.setCorrection(shooterCorrection);
+			} else if(gamepad1.dpadLeftWasPressed()) {
+				shooterCorrection-=10;
+				robot.shooter.setCorrection(shooterCorrection);
+			}
+
+			telemetry.addData("Shooter Correction:",shooterCorrection);
+			telemetry.addData("Resting Battery Voltage:",robot.shooter.getRestingBatteryVoltage());
+			*/
+
 			if(robot.aimMode==Constants.General.AimMode.MANUAL) {
 				if (gamepad1.dpadUpWasPressed()) {
 					shooterTarget += 10;
@@ -159,7 +173,6 @@ public class ManualBase extends LinearOpMode {
 					//Set shooter velocity and hood positions
 					robot.shooter.setShotVelocityUsingDistancesFromTarget(s, v);
 					robot.shooter.setHoodPositionUsingDistancesFromTarget(s, v);
-
 					robot.shooter.spinFlywheel();
 
 					if (gamepad1.right_trigger >= Constants.General.CONTROLLER_DEADBAND && (shooterFlag || (robot.shooter.speedWithinError() && robot.turret.headingWithinError()))) {
@@ -311,7 +324,8 @@ public class ManualBase extends LinearOpMode {
 				robot.turret.turnToZero();
 			}
 
-			//TODO: Test
+			//Turret Position Testing
+			/*
 			if(gamepad1.x) {
 				robot.turret.turnToDegrees(90);
 			} else if(gamepad1.a) {
@@ -321,6 +335,7 @@ public class ManualBase extends LinearOpMode {
 			}
 
 			telemetry.addData("Turret position:",robot.turret.getPosition());
+			*/
 
 			//------------------------------------------
 			//Telemetry

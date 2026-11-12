@@ -140,20 +140,10 @@ public class Constants {
 		public static double SHOOTER_ERROR_ALLOWED=25; //Allowed error for shot (ticks/sec)
 		public static boolean SHOOTER_SPEED_AUTO=true; //Automatically set speed and hood angle based on alliance and current field position
 
-		//Counter rollers
-		/*
-		public static final String SHOOTER_COUNTER_ID = "shooter_counter";
-		public static final boolean SHOOTER_COUNTER_ENABLED=false;
-		public static final DcMotorSimple.Direction SHOOTER_COUNTER_DIRECTION = DcMotorSimple.Direction.REVERSE;
-		public static final double SHOOTER_COUNTER_PID_kS=0.15,SHOOTER_COUNTER_PID_kV=0.00043,SHOOTER_COUNTER_PID_kP=0.0003;
-		public static final double SHOOTER_COUNTER_RAMP_RATE=0.20;
-		public static final double SHOOTER_COUNTER_RATIO=1.2; //Ratio for counter motor compared to shooter wheel (1.415=same surface speed)
-		public static final double SHOOTER_COUNTER_VELOCITY=SHOOTER_VELOCITY*SHOOTER_COUNTER_RATIO; //Speed for pollen shot
-		*/
-
 		// Voltage Compensation
-		public static boolean ENABLE_VOLTAGE_COMPENSATION = false;
+		public static boolean ENABLE_VOLTAGE_COMPENSATION = true;
 		public static double NOMINAL_VOLTAGE = 12.0;
+		public static final double VELOCITY_PER_VOLT = -70.0;
 
 		//Hood
 		public static final String HOOD_ID = "hood";

@@ -20,7 +20,7 @@ public class Shooter {
 	private final Telemetry telemetry;
 
 	private double ballstopClosedPos,ballstopOpenPos,shotVelocity;
-	private double targetVelocity=0.0;
+	private double targetVelocity=0.0,velocityCorrection=0.0;
 	private double rampRate=Constants.Shooter.SHOOTER_RAMP_RATE;
 	private double hoodPos=Constants.Shooter.HOOD_DEFAULT;
 	private double lastPower=0.0; //Used for power ramping
@@ -36,7 +36,7 @@ public class Shooter {
 		this.shooterRightMotor = hardwareMap.get(DcMotorEx.class, Constants.Shooter.SHOOTER_RIGHT_ID);
 		shooterRightMotor.setDirection(Constants.Shooter.SHOOTER_RIGHT_DIRECTION);
 
-		shotVelocity=Constants.Shooter.SHOOTER_VELOCITY;
+		shotVelocity=Constants.Shooter.SHOOTER_VELOCITY; //Sets default target
 
 		//Get ball stop
 		this.ballstopServo = hardwareMap.get(Servo.class, Constants.Shooter.BALLSTOP_ID);
@@ -81,7 +81,7 @@ public class Shooter {
 	}
 
 	public void setShotVelocity(double velocity) {
-		shotVelocity=velocity;
+		shotVelocity=velocity+velocityCorrection;
 	}
 
 	public double getShotVelocity() {
@@ -106,6 +106,10 @@ public class Shooter {
 		return shooterLeftMotor.getVelocity();
 	}
 
+	public void setCorrection(double correction) {
+		velocityCorrection=correction;
+	}
+
 	public double getRawBatteryVoltage() {
 		double minVoltage = Double.MAX_VALUE;
 		if (hardwareMap != null && hardwareMap.voltageSensor != null) {
@@ -117,6 +121,10 @@ public class Shooter {
 			}
 		}
 		return (minVoltage == Double.MAX_VALUE) ? Constants.Shooter.NOMINAL_VOLTAGE : minVoltage;
+	}
+
+	public double getRestingBatteryVoltage() {
+		return restingBatteryVoltage;
 	}
 
 	public void updateBatteryVoltage() {
@@ -155,7 +163,8 @@ public class Shooter {
 	}
 
 	public double getCompensatedTargetVelocity() {
-		return getVoltageCompensatedVelocity(targetVelocity);
+		return targetVelocity + Constants.Shooter.VELOCITY_PER_VOLT * (restingBatteryVoltage - Constants.Shooter.NOMINAL_VOLTAGE);
+		//ORIGINAL: return getVoltageCompensatedVelocity(targetVelocity);
 	}
 
 	public void lowerHood() {
