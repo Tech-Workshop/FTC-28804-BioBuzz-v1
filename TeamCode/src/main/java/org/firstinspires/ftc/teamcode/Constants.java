@@ -174,9 +174,9 @@ public class Constants {
 		public static final String TURRET_LEFT_ID = "turret_left";
 		public static final String TURRET_RIGHT_ID = "turret_right";
 
-		public static final double TURRET_ZERO_POS=0.639;
-		public static final double TURRET_POS_PER_DEGREE=0.002908;
-		public static final double TURRET_UPDATE_ERROR=0.005; //Allowed error before position is updated
+		public static final double TURRET_ZERO_POS=0.63; //Orig: 0.639
+		public static final double TURRET_POS_PER_DEGREE=0.002635; //Tuned -- 0.002908 too large, 0.0025 too low, 0.00265 too high
+		public static final double TURRET_UPDATE_ERROR=0.003; //Allowed error before position is updated
 
 		public static final double TURRET_MIN=0.010;
 		public static final double TURRET_MAX=0.990;

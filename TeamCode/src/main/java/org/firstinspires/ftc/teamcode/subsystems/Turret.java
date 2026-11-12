@@ -20,7 +20,7 @@ public class Turret {
 	private final Constants.General.Alliance alliance;
 	private Robot robot;
 
-	private double lastPosUpdate=-1.0; //Bad initial value forces first update
+	private double lastPosUpdate=-1.0,thisPosition=0.0; //Bad initial value forces first update
 	private boolean deadzoneFlag=false;
 
 	public Turret(HardwareMap hardwareMap, Telemetry telemetry, Constants.General.Alliance alliance) {
@@ -79,10 +79,15 @@ telemetry.addData("Turret Position:",position);
 		position=Math.clamp(position,Constants.Turret.TURRET_MIN,Constants.Turret.TURRET_MAX);
 
 		if(Math.abs(position-lastPosUpdate)> Constants.Turret.TURRET_UPDATE_ERROR) {
+			thisPosition=position;
 			turretLeftServo.setPosition(position);
 			turretRightServo.setPosition(position);
 			lastPosUpdate = position;
 		}
+	}
+
+	public double getPosition() {
+		return thisPosition;
 	}
 
 	public void turnToTarget() {

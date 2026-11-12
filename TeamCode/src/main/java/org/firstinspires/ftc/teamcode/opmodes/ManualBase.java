@@ -264,9 +264,9 @@ public class ManualBase extends LinearOpMode {
 			//------------------------------------------
 			//INTAKE
 
-			//Intake
-			if(gamepad1.right_trigger<=Constants.General.CONTROLLER_DEADBAND && !resetShooterFlag && !shooterFlag) {
-				if (gamepad2.right_trigger>=Constants.General.CONTROLLER_DEADBAND || (driverOnly && gamepad1.b)) {
+			//Intake (only when not shooting)
+			if(gamepad1.left_trigger<=Constants.General.CONTROLLER_DEADBAND && !resetShooterFlag && !shooterFlag) {
+				if (gamepad2.right_trigger>=Constants.General.CONTROLLER_DEADBAND || (driverOnly && gamepad1.right_bumper)) {
 					robot.intake.intake();
 					robot.indexer.intakeSpeed();
 					intakeFlag = true;
@@ -301,8 +301,8 @@ public class ManualBase extends LinearOpMode {
 
 			//Auto-aim turret
 			if(robot.aimMode==Constants.General.AimMode.TURRET) {
-				//Enable only when not in center and driver is ramping up shooter
-				if(gamepad1.left_trigger >= Constants.General.CONTROLLER_DEADBAND && (robot.drive.follower.pose().y()<48.0 || robot.drive.follower.pose().y()>92.0)) {
+				//Enable only when not in center strip of field and driver is ramping up shooter --or-- every 20 loops
+				if((gamepad1.left_trigger >= Constants.General.CONTROLLER_DEADBAND || loopCnt%20==0) && (robot.drive.follower.pose().y()<48.0 || robot.drive.follower.pose().y()>92.0)) {
 					robot.turret.turnToTarget();
 				}
 
@@ -310,6 +310,17 @@ public class ManualBase extends LinearOpMode {
 			} else if(robot.aimMode!=Constants.General.AimMode.TURRET && loopCnt%20==0) {
 				robot.turret.turnToZero();
 			}
+
+			//TODO: Test
+			if(gamepad1.x) {
+				robot.turret.turnToDegrees(90);
+			} else if(gamepad1.a) {
+				robot.turret.turnToDegrees(0);
+			} else if(gamepad1.b) {
+				robot.turret.turnToDegrees(-90);
+			}
+
+			telemetry.addData("Turret position:",robot.turret.getPosition());
 
 			//------------------------------------------
 			//Telemetry
