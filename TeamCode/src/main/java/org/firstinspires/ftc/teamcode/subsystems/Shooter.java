@@ -81,7 +81,7 @@ public class Shooter {
 	public void stopFlywheel() {
 		setTargetVelocity(0.0);
 		shooterLeftMotor.setPower(0.0);
-		//shooterRightMotor.setPower(0.0);
+		shooterRightMotor.setPower(0.0);
 	}
 
 	public double getTargetVelocity() {
@@ -237,7 +237,7 @@ public class Shooter {
 
 			//Set motor power
 			shooterLeftMotor.setPower(shooterPower);
-			//shooterRightMotor.setPower(shooterPower);
+			shooterRightMotor.setPower(shooterPower);
 		}
 	}
 

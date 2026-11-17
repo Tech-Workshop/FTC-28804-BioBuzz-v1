@@ -162,20 +162,21 @@ public class Constants {
 	}
 
 	/*
-	 * Turretenoch Constants
+	 * Turret Constants
 	 */
 	public static final class Turret {
 		public static final String TURRET_LEFT_ID = "turret_left";
 		public static final String TURRET_RIGHT_ID = "turret_right";
 
-		public static final double TURRET_ZERO_POS=0.63; //Orig: 0.639
-		public static final double TURRET_POS_PER_DEGREE=0.002635; //Tuned -- 0.002908 too large, 0.0025 too low, 0.00265 too high
+		public static final double TURRET_ZERO_POS=0.5515; //Orig: 0.639 [0.63]
+		public static final double TURRET_BACKWARDS_POS = 0.0873;   // exact position at -180 degrees
+		public static final double TURRET_POS_PER_DEGREE = (TURRET_ZERO_POS - TURRET_BACKWARDS_POS) / 180.0;  // ~0.002579		public static final double TURRET_POS_PER_DEGREE=0.002635; //Tuned -- 0.002908 too large, 0.0025 too low, 0.00265 too high
 		public static final double TURRET_UPDATE_ERROR=0.003; //Allowed error before position is updated
 
-		public static final double TURRET_MIN=0.010;
-		public static final double TURRET_MAX=0.990;
-		public static final double TURRET_DEADZONE_MIN=120.0; //Math.floor(TURRET_MAX-TURRET_ZERO_POS)/TURRET_POS_PER_DEGREE; //120 degrees
-		public static final double TURRET_DEADZONE_MAX=144.0; //Math.ceil(((TURRET_ZERO_POS-TURRET_MIN)/TURRET_POS_PER_DEGREE)-360.0); //-144 degrees
+		public static final double TURRET_MIN=0.02;
+		public static final double TURRET_MAX=0.98;
+		public static final double TURRET_DEADZONE_MIN=160.0; //Math.floor(TURRET_MAX-TURRET_ZERO_POS)/TURRET_POS_PER_DEGREE; //120 degrees
+		public static final double TURRET_DEADZONE_MAX=160.1; //Math.ceil(((TURRET_ZERO_POS-TURRET_MIN)/TURRET_POS_PER_DEGREE)-360.0); //-144 degrees
 	}
 
 	/*

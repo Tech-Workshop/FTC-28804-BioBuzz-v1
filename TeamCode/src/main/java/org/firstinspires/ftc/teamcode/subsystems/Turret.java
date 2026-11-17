@@ -56,13 +56,13 @@ telemetry.addLine("TURRET - DEADZONE!");
 				deadzoneFlag = true;
 			}
 		} else {
-			//Wrap degrees to other side of deadzone
-			if(degrees>Constants.Turret.TURRET_DEADZONE_MAX) {
-				degrees-=360.0;
+			double position=positionFor(degrees);
+			if (position > Constants.Turret.TURRET_MAX) {
+				position = positionFor(degrees - 360.0);
 			}
-			double position=Constants.Turret.TURRET_ZERO_POS + degrees * Constants.Turret.TURRET_POS_PER_DEGREE;
+
 			setPosition(position);
-telemetry.addData("Turret Position:",position);
+			telemetry.addData("Turret Position:",position);
 
 			if(deadzoneFlag) {
 				deadzoneFlag=false;
@@ -71,6 +71,9 @@ telemetry.addData("Turret Position:",position);
 		}
 	}
 
+	private static double positionFor(double degrees) {
+		return Constants.Turret.TURRET_ZERO_POS + degrees * Constants.Turret.TURRET_POS_PER_DEGREE;
+	}
 	public boolean headingWithinError() {
 		return !deadzoneFlag;
 	}
