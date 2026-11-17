@@ -62,6 +62,14 @@ public class Shooter {
 		ballstopServo.setPosition(ballstopOpenPos);
 	}
 
+	public boolean isGateOpen() {
+		if(ballstopServo.getPosition()==ballstopOpenPos) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
 	public void spinFlywheel() {
 		setTargetVelocity(shotVelocity);
 	}
@@ -73,7 +81,7 @@ public class Shooter {
 	public void stopFlywheel() {
 		setTargetVelocity(0.0);
 		shooterLeftMotor.setPower(0.0);
-		shooterRightMotor.setPower(0.0);
+		//shooterRightMotor.setPower(0.0);
 	}
 
 	public double getTargetVelocity() {
@@ -190,6 +198,15 @@ public class Shooter {
 
 	public void setHoodPositionUsingDistancesFromTarget(double s, double v) {
 		double position = 0.36150 + 0.000715 * v - 0.004788 * s + 0.00001349 * s * s + 0.0001978 * v * s;
+
+		telemetry.addData("OLD POS:",position);
+
+		//TODO: Temp fix because axon reset
+		//double slope=-0.47368;
+		//position=(0.57 - slope * 0.39) + (slope * position);
+		//BAD -- position=0.7547-0.47368*position;
+		position=(0.39 - (9.0 / 19.0) * 0.39) + (9.0 / 19.0)*position;
+		telemetry.addData("NEW POS:",position);
 		position=Math.clamp(position,Constants.Shooter.HOOD_MIN,Constants.Shooter.HOOD_MAX);
 		setHoodPosition(position);
 	}
@@ -220,7 +237,7 @@ public class Shooter {
 
 			//Set motor power
 			shooterLeftMotor.setPower(shooterPower);
-			shooterRightMotor.setPower(shooterPower);
+			//shooterRightMotor.setPower(shooterPower);
 		}
 	}
 

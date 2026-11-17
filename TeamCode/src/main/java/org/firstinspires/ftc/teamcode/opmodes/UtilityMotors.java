@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 
+import org.firstinspires.ftc.robotcore.external.navigation.CurrentUnit;
 import org.firstinspires.ftc.teamcode.Constants;
 
 @TeleOp(group = "UTILITY",name="Utility: Motors Test")
@@ -76,8 +77,8 @@ public class UtilityMotors extends LinearOpMode {
 			*/
 
 			if(gamepad1.x) {
-				shooterLeft.setVelocity(1100);
-				shooterRight.setVelocity(1100);
+				shooterLeft.setVelocity(1600);
+				shooterRight.setVelocity(1600);
 			} else {
 				shooterLeft.setVelocity(0);
 				shooterRight.setVelocity(0);
@@ -103,8 +104,13 @@ public class UtilityMotors extends LinearOpMode {
 
 			telemetry.addData("Indexer Power:",indexerPower);
 			telemetry.addData("Indexer Velocity",indexer.getVelocity());
+			telemetry.addData("Indexer (A):",indexer.getCurrent(CurrentUnit.AMPS));
 
 			telemetry.addData("Shooter Velocity:",shooterLeft.getVelocity());
+			telemetry.addData("Left Shooter (A):",shooterLeft.getCurrent(CurrentUnit.AMPS));
+			telemetry.addData("Right Shooter (A):",shooterRight.getCurrent(CurrentUnit.AMPS));
+
+
 			telemetry.addData("Intake Velocity",intake.getVelocity());
 			telemetry.update();
 		}

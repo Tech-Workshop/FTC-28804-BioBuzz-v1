@@ -48,8 +48,9 @@ public class Constants {
 	 * Autonomous Constants
 	 */
 	public static final class Auton {
-		public static double AUTO_SHOOT_VELOCITY=1570;
-		public static double AUTO_HOOD_POSITION=0.77;
+		//public static double AUTO_SHOOT_VELOCITY=1570;
+		//public static double AUTO_HOOD_POSITION=0.77;
+		public static double AUTO_MAX_SPEED=0.80;
 	}
 
 	/*
@@ -135,7 +136,7 @@ public class Constants {
 		public static DcMotorSimple.Direction SHOOTER_RIGHT_DIRECTION = DcMotorSimple.Direction.FORWARD;
 
 		public static double SHOOTER_PID_kS=0.135,SHOOTER_PID_kV=0.000307,SHOOTER_PID_kP=0.003;
-		public static double SHOOTER_RAMP_RATE=0.20;
+		public static double SHOOTER_RAMP_RATE=0.05;
 		public static double SHOOTER_VELOCITY=1100; //Speed for pollen shot (default)
 		public static double SHOOTER_ERROR_ALLOWED=25; //Allowed error for shot (ticks/sec)
 		public static boolean SHOOTER_SPEED_AUTO=true; //Automatically set speed and hood angle based on alliance and current field position
@@ -143,13 +144,16 @@ public class Constants {
 		// Voltage Compensation
 		public static boolean ENABLE_VOLTAGE_COMPENSATION = true;
 		public static double NOMINAL_VOLTAGE = 12.0;
-		public static final double VELOCITY_PER_VOLT = -70.0;
+		public static final double VELOCITY_PER_VOLT = -40.0; //ORIG: -70
 
 		//Hood
 		public static final String HOOD_ID = "hood";
-		public static final double HOOD_DEFAULT=0.45; //Default position
-		public static final double HOOD_MIN=0.39; //Minimum down position
-		public static final double HOOD_MAX=0.77; //Maximum up position
+//		public static final double HOOD_DEFAULT=0.45; //Default position
+//		public static final double HOOD_MIN=0.39; //Minimum down position
+//		public static final double HOOD_MAX=0.77; //Maximum up position
+		public static final double HOOD_DEFAULT=0.53; //Default position[.54]
+		public static final double HOOD_MIN=0.39; //Minimum (up position)
+		public static final double HOOD_MAX=0.56; //Maximum (down position) [.57]
 
 		//Ball stop
 		public static String BALLSTOP_ID = "ball_stop"; //Axon Max+
@@ -158,7 +162,7 @@ public class Constants {
 	}
 
 	/*
-	 * Turret Constants
+	 * Turretenoch Constants
 	 */
 	public static final class Turret {
 		public static final String TURRET_LEFT_ID = "turret_left";

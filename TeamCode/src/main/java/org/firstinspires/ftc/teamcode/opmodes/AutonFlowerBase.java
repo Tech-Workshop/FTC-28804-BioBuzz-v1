@@ -38,8 +38,11 @@ public class AutonFlowerBase extends OpMode {
 	private final Pose upShoot = poseFactory.of(38.6, 14, 70.0); //Shoot position
 	//private final Pose upShoot = poseFactory.of(22.78, 15.9, 52.0); //Shoot position
 	private final Pose flowerReady = poseFactory.of(30.0, 48.0, 180.0);//In front of flower
-	private final Pose flowerIn = poseFactory.of(15.1, 48.0, 180.0);//De-pollenate flower
-	private final Pose flowerAgitate = poseFactory.of(17.0, 48.0, 180.0);//De-pollenate flower
+	private final Pose flowerIn = poseFactory.of(14.5, 48.0, 180.0);//De-pollenate flower
+	private final Pose flowerAgitate = poseFactory.of(16.5, 48.0, 180.0);//De-pollenate flower
+	private final Pose flowerBackUp = poseFactory.of(19, 48.0, 180.0);//Back-up with ramp down
+	private final Pose flowerForwardSlow = poseFactory.of(16, 48.0, 180.0);//Forward slow to intake pollen
+
 	private final Pose runDown = poseFactory.of(22.0, 30, 90.0); //Run start position
 
 	//TODO: Changed heading from -50 to -47
@@ -47,8 +50,10 @@ public class AutonFlowerBase extends OpMode {
 	//private final Pose downShoot = poseFactory.of(22.78, (144-15.9), -52.0); //Shoot position
 	private final Pose flowerDownReadyA = poseFactory.of(40.0, 120.0, 90.0);//In front of flower
 	private final Pose flowerDownReadyB = poseFactory.of(47.0, 120.0, 90.0);//In front of flower
-	private final Pose flowerDownIn = poseFactory.of(47.0, 126.5, 90.0);//De-pollenate flower
-	private final Pose flowerDownAgitate = poseFactory.of(47.0, 124.5, 90.0);//De-pollenate flower
+	private final Pose flowerDownIn = poseFactory.of(47.0, 127.0, 90.0);//De-pollenate flower
+	private final Pose flowerDownAgitate = poseFactory.of(47.0, 125.0, 90.0);//De-pollenate flower
+	private final Pose flowerDownBackUp = poseFactory.of(47.0, 122.5, 90.0);//De-pollenate flower
+	private final Pose flowerDownForwardSlow = poseFactory.of(47.0, 125.5, 90.0);//De-pollenate flower
 
 	//OLD -- private final Pose park = poseFactory.of(14.0, 93.0, 0.0); //Park
 	private final Pose parkLeft = poseFactory.of(15.0, 120.0, 0.0); //Park
@@ -62,7 +67,7 @@ public class AutonFlowerBase extends OpMode {
 	private final Pose parkPush = poseFactory.of(12.0, 93.0, -6);
 
 	public Path path1() {
-		return PathUtility.linearPathWithSpeed(start, upShoot, thisAlliance,1.0);
+		return PathUtility.linearPathWithSpeed(start, upShoot, thisAlliance,Constants.Auton.AUTO_MAX_SPEED);
 	} //To shoot position
 
 	public Path path2() {
@@ -70,19 +75,30 @@ public class AutonFlowerBase extends OpMode {
 	} //To front of flower
 
 	public Path path3() {
-		return PathUtility.linearPathWithSpeed(flowerReady, flowerIn, thisAlliance, 1.0);
+		return PathUtility.linearPathWithSpeed(flowerReady, flowerIn, thisAlliance, Constants.Auton.AUTO_MAX_SPEED);
 	} //Move into flower
 
 	public Path path3a() {
-		return PathUtility.linearPathWithSpeed(flowerIn, flowerAgitate, thisAlliance, 1.0);
+		return PathUtility.linearPathWithSpeed(flowerIn, flowerAgitate, thisAlliance, Constants.Auton.AUTO_MAX_SPEED);
 	} //Move into flower
 
 	public Path path3b() {
 		return PathUtility.linearPath(flowerAgitate, flowerIn, thisAlliance);
-	} //Move into flower
+	}
+
+	//Move backward from flower (with ramp still lowered)
+	public Path path3c() {
+		return PathUtility.linearPath(flowerIn, flowerBackUp, thisAlliance);
+	}
+
+	//Move forward slowly to intake remaining pollen
+	public Path path3d() {
+		return PathUtility.linearPathWithSpeed(flowerBackUp, flowerForwardSlow, thisAlliance,0.3);
+	}
+
 
 	public Path path4() {
-		return PathUtility.linearPath(flowerIn, upShoot, thisAlliance);
+		return PathUtility.linearPathWithSpeed(flowerForwardSlow, upShoot, thisAlliance,Constants.Auton.AUTO_MAX_SPEED);
 	} //To shoot position
 
 	public Path path5() {
@@ -96,32 +112,42 @@ public class AutonFlowerBase extends OpMode {
 
 	//From Down Shot position to Down Flower Ready
 	public Path path7a() {
-		return PathUtility.linearPathWithSpeed(downShoot, flowerDownReadyA, thisAlliance, 1.0);
+		return PathUtility.linearPathWithSpeed(downShoot, flowerDownReadyA, thisAlliance, Constants.Auton.AUTO_MAX_SPEED);
 	}
 
 	//From Up Shot position to Down Flower Ready
 	public Path path7b() {
-		return PathUtility.linearPathWithSpeed(runDown, flowerDownReadyA, thisAlliance, 1.0);
+		return PathUtility.linearPathWithSpeed(runDown, flowerDownReadyA, thisAlliance, Constants.Auton.AUTO_MAX_SPEED);
 	}
 
 	public Path path8pre() {
-		return PathUtility.linearPathWithSpeed(flowerDownReadyA, flowerDownReadyB, thisAlliance, 1.0);
+		return PathUtility.linearPathWithSpeed(flowerDownReadyA, flowerDownReadyB, thisAlliance, Constants.Auton.AUTO_MAX_SPEED);
 	}
 
 	public Path path8() {
-		return PathUtility.linearPathWithSpeed(flowerDownReadyB, flowerDownIn, thisAlliance, 1.0);
+		return PathUtility.linearPathWithSpeed(flowerDownReadyB, flowerDownIn, thisAlliance, Constants.Auton.AUTO_MAX_SPEED);
 	} //Move into flower
 
 	public Path path8a() {
-		return PathUtility.linearPathWithSpeed(flowerDownIn, flowerDownAgitate, thisAlliance, 1.0);
+		return PathUtility.linearPathWithSpeed(flowerDownIn, flowerDownAgitate, thisAlliance, Constants.Auton.AUTO_MAX_SPEED);
 	}
 
 	public Path path8b() {
 		return PathUtility.linearPath(flowerDownAgitate, flowerDownIn, thisAlliance);
-	} //Move into flower
+	}
+
+	//Move backward from flower (with ramp still lowered)
+	public Path path8c() {
+		return PathUtility.linearPath(flowerDownIn, flowerDownBackUp, thisAlliance);
+	}
+
+	//Move forward slowly to intake remaining pollen
+	public Path path8d() {
+		return PathUtility.linearPathWithSpeed(flowerDownBackUp, flowerDownForwardSlow, thisAlliance,0.3);
+	}
 
 	public Path path9() {
-		return PathUtility.linearPath(flowerDownIn, downShoot, thisAlliance);
+		return PathUtility.linearPathWithSpeed(flowerDownForwardSlow, downShoot, thisAlliance,Constants.Auton.AUTO_MAX_SPEED);
 	}
 
 	public Path parkLeft() {
@@ -157,14 +183,14 @@ public class AutonFlowerBase extends OpMode {
 			//Spin up shooter and move to shoot position
 			//instant(()->robot.shooter.setShotVelocityUsingDistancesFromTarget(robot.turret.getSidewaysDistanceFromPose(upShoot,thisAlliance),robot.turret.getVerticalDistanceFromPose(upShoot,thisAlliance))),
 			//instant(()->robot.shooter.setHoodPositionUsingDistancesFromTarget(robot.turret.getSidewaysDistanceFromPose(upShoot,thisAlliance),robot.turret.getVerticalDistanceFromPose(upShoot,thisAlliance))),
-			instant(()->robot.shooter.adjustShotVelocity(-20.0)), //TODO: Bad solution
 			instant(() -> robot.shooter.spinFlywheel()),
 			follow(robot.drive.follower, path1()),
 			waitMs(700),
 
 			//Open ball gate and start indexer
-			instant(() -> robot.shooter.openGate()),
 			instant(() -> robot.indexer.shootSpeed()),
+			waitMs(150),
+			instant(() -> robot.shooter.openGate()),
 			waitMs(1500),
 
 			//Stop indexer & shooter, close ball gate, lower flower ramp
@@ -185,17 +211,15 @@ public class AutonFlowerBase extends OpMode {
 			waitMs(200),
 			follow(robot.drive.follower, path3a()),
 			instant(() -> robot.ramp.lower()),
-			//follow(robot.drive.follower, path3b()).raceWith(waitMs(400)),
-			//instant(() -> robot.ramp.agitate()),
-			//waitMs(100),
-			//follow(robot.drive.follower, path3a()),
-			//instant(() -> robot.ramp.lower()),
 			follow(robot.drive.follower, path3b()).raceWith(waitMs(400)),
 			instant(() -> robot.ramp.agitate()),
 			waitMs(200),
 			instant(() -> robot.ramp.lower()),
+			waitMs(200),
+			follow(robot.drive.follower, path3c()),
+			follow(robot.drive.follower, path3d()),
 			instant(()->robot.sensors.limelightEnable()),
-			waitMs(1000),
+			waitMs(400),
 
 			//Stop intake, indexer
 			instant(() -> robot.intake.stop()),
@@ -209,9 +233,6 @@ public class AutonFlowerBase extends OpMode {
 					instant(() -> robot.ramp.raise())
 				)
 			),
-
-			//Start up flywheel
-			instant(() -> robot.shooter.spinFlywheel()),
 
 			//Limelight - start collecting data
 			instant(() -> robot.sensors.limelightStartCollecting()),
@@ -239,10 +260,14 @@ public class AutonFlowerBase extends OpMode {
 				)
 			),
 
+			//Start up flywheel
+			instant(() -> robot.shooter.spinFlywheel()),
+
 			//Shoot
-			waitMs(500),
-			instant(() -> robot.shooter.openGate()),
+			waitMs(1600),
 			instant(() -> robot.indexer.shootSpeed()),
+			waitMs(150),
+			instant(() -> robot.shooter.openGate()),
 			waitMs(1500),
 			instant(() -> robot.indexer.stop()),
 			instant(() -> robot.shooter.closeGate()),
@@ -267,19 +292,17 @@ public class AutonFlowerBase extends OpMode {
 			follow(robot.drive.follower, path8pre()),
 			follow(robot.drive.follower, path8()).raceWith(waitMs(800)),
 			instant(() -> robot.ramp.agitate()),
-			waitMs(300),
-			instant(() -> robot.ramp.lower()),
+			waitMs(200),
 			follow(robot.drive.follower, path8a()),
-			//follow(robot.drive.follower, path8b()).raceWith(waitMs(400)),
-			//instant(() -> robot.ramp.agitate()),
-			//waitMs(100),
-			//instant(() -> robot.ramp.lower()),
-			//follow(robot.drive.follower, path8a()),
+			instant(() -> robot.ramp.lower()),
 			follow(robot.drive.follower, path8b()).raceWith(waitMs(400)),
 			instant(() -> robot.ramp.agitate()),
 			waitMs(200),
 			instant(() -> robot.ramp.lower()),
-			waitMs(1000),
+			waitMs(200),
+			follow(robot.drive.follower, path8c()),
+			follow(robot.drive.follower, path8d()),
+			waitMs(400),
 
 			//Stop intake, indexer, raise ramp, and move to shoot position
 			instant(() -> robot.intake.stop()),
@@ -297,9 +320,10 @@ public class AutonFlowerBase extends OpMode {
 			//Spin up flywheel and shoot
 			//instant(()-> robot.shooter.setShotVelocity(Constants.Auton.AUTO_SHOOT_VELOCITY+20)),
 			instant(() -> robot.shooter.spinFlywheel()),
-			waitMs(2000),
-			instant(() -> robot.shooter.openGate()),
+			waitMs(1600),
 			instant(() -> robot.indexer.shootSpeed()),
+			waitMs(150),
+			instant(() -> robot.shooter.openGate()),
 			waitMs(2000),
 			instant(() -> robot.indexer.stop()),
 			instant(() -> robot.shooter.closeGate()),

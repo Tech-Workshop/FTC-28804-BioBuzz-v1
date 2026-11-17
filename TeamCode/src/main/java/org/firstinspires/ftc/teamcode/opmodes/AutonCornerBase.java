@@ -48,14 +48,15 @@ public class AutonCornerBase extends OpMode {
 
 	private Command autoRoutine() {
 		return sequential(
-			waitMs(20000),
+			waitMs(7000),
 			instant(() -> robot.shooter.spinFlywheel()),
 			follow(robot.drive.follower, path1()),
 			waitMs(1000),
 
 			//Open ball gate and start indexer
-			instant(() -> robot.shooter.openGate()),
 			instant(() -> robot.indexer.shootSpeed()),
+			waitMs(150),
+			instant(() -> robot.shooter.openGate()),
 			waitMs(1800),
 
 			//Stop indexer & shooter, close ball gate, lower flower ramp

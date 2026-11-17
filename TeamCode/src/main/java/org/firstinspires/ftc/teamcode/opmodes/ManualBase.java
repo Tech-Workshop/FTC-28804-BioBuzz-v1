@@ -21,8 +21,9 @@ public class ManualBase extends LinearOpMode {
 	ElapsedTime shooterDelay=new ElapsedTime();
 	ElapsedTime resetShooterDelay=new ElapsedTime();
 	ElapsedTime intakeTimer=new ElapsedTime();
+	ElapsedTime gateDelay=new ElapsedTime();
 
-	boolean intakeFlag=false,shooterFlag=false,shooterCorrectionFlag=false,rampMoving=false,resetShooterFlag=false;
+	boolean gateFlag=false,intakeFlag=false,shooterFlag=false,shooterCorrectionFlag=false,rampMoving=false,resetShooterFlag=false;
 
 	//Alliance-specific
 	protected Constants.General.Alliance thisAlliance=Constants.General.Alliance.UNKNOWN;
@@ -54,6 +55,7 @@ public class ManualBase extends LinearOpMode {
 		robot.turret.turnToZero();
 
 		robot.sensors.setLedDisable();
+		telemetry.addLine("=== NEW CODE (v1.01) ===");
 		telemetry.update();
 
 		waitForStart();
@@ -96,9 +98,8 @@ public class ManualBase extends LinearOpMode {
 			//Driver override heading
 			if(gamepad1.backWasPressed()) {
 				robot.drive.overridePose(overridePose);
-
-			//Standard driver controls
 			} else {
+				//Standard driver controls (includes override)
 				robot.drive.drive(gamepad1);
 			}
 
@@ -176,13 +177,20 @@ public class ManualBase extends LinearOpMode {
 					robot.shooter.spinFlywheel();
 
 					if (gamepad1.right_trigger >= Constants.General.CONTROLLER_DEADBAND && (shooterFlag || (robot.shooter.speedWithinError() && robot.turret.headingWithinError()))) {
-						robot.shooter.openGate();
-						robot.indexer.shootSpeed();
+						if(!gateFlag && !robot.shooter.isGateOpen()) {
+							robot.indexer.shootSpeed();
+							gateDelay.reset();
+							gateFlag=true;
+						} else if(gateDelay.time()>0.15) {
+							robot.shooter.openGate();
+							gateFlag=false;
+						}
 						shooterFlag=true;
 					} else {
 						robot.shooter.closeGate();
 						robot.indexer.stop();
 						shooterFlag=false;
+						gateFlag=false;
 					}
 
 				} else {

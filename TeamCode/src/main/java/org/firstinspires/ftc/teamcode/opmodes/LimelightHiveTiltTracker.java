@@ -10,14 +10,11 @@ import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import java.util.List;
 
-@TeleOp(name = "Limelight Hive Tilt Tracker", group = "TeleOp")
+@TeleOp(name = "Utility: Limelight April Tags", group = "UTILITY")
 public class LimelightHiveTiltTracker extends LinearOpMode {
 
 	private Limelight3A limelight;
-
-	// Adjust these threshold angles (in degrees) based on actual field testing
-	private static final double TIPPING_THRESHOLD_MIN =25;  // Starts to wobble
-	private static final double TIPPED_THRESHOLD_MAX = 50; // Completely flipped
+	private int pipelineIndex=0;
 
 	@Override
 	public void runOpMode() throws InterruptedException {
@@ -27,7 +24,7 @@ public class LimelightHiveTiltTracker extends LinearOpMode {
 		telemetry.update();
 
 		telemetry.setMsTransmissionInterval(11);
-		limelight.pipelineSwitch(0); // Ensure index 0 matches your AprilTag pipeline
+		limelight.pipelineSwitch(pipelineIndex); // Ensure index 0 matches your AprilTag pipeline
 		limelight.start();
 
 		telemetry.addData("Status", "Ready! Press Play.");
@@ -35,54 +32,38 @@ public class LimelightHiveTiltTracker extends LinearOpMode {
 		waitForStart();
 
 		while (opModeIsActive()) {
+			if(gamepad1.dpadUpWasPressed()) {
+				pipelineIndex++;
+				limelight.pipelineSwitch(pipelineIndex); // Ensure index 0 matches your AprilTag pipeline
+			} else if(gamepad1.dpadDownWasPressed()) {
+				pipelineIndex--;
+				limelight.pipelineSwitch(pipelineIndex); // Ensure index 0 matches your AprilTag pipeline
+			}
+
 			com.qualcomm.hardware.limelightvision.LLResult result = limelight.getLatestResult();
 
-//			limelight.
-//			LLStatus status = limelight.getStatus();
-//			telemetry.addData("Status ", "Index is " + status.getPipelineIndex());
+			LLStatus status = limelight.getStatus();
+			telemetry.addData("Pipeline Index: ", status.getPipelineIndex());
 
+			telemetry.addLine("Checking for results...");
 			if (result != null && result.isValid()) {
 				List<LLResultTypes.FiducialResult> aprilTags = result.getFiducialResults();
 
 				if (!aprilTags.isEmpty()) {
 					LLResultTypes.FiducialResult targetTag = aprilTags.get(0);
+					int tagId = targetTag.getFiducialId();
 
-					// FIXED: Corrected type retrieval from List<Double> to Pose3D
-					Pose3D cameraSpacePose = targetTag.getTargetPoseCameraSpace();
-
-					if (cameraSpacePose != null) {
-						// Extract orientation angles
-						YawPitchRollAngles orientation = cameraSpacePose.getOrientation();
-						double currentRoll = orientation.getRoll(AngleUnit.DEGREES);
-						int tagId = targetTag.getFiducialId();
-
-						// --- Threshold State Logic ---
-						String hiveState;
-
-						if (currentRoll >= TIPPED_THRESHOLD_MAX) {
-							hiveState = "⚠️ TIPPED!";
-						} else if (currentRoll >= TIPPING_THRESHOLD_MIN) {
-							hiveState = "🔄 TIPPING / WOBBLING";
-						} else {
-							hiveState = "✅ Stable (Not Tipped)";
-						}
-
-						// Send status to the driver station
-						telemetry.addData("Tracking Tag ID", tagId);
-						telemetry.addData("Hive State", hiveState);
-						telemetry.addData("Measured Tilt (Yaw)", "%.2f°", orientation.getYaw(AngleUnit.DEGREES));
-						telemetry.addData("Measured Tilt (Roll)", "%.2f°", orientation.getRoll(AngleUnit.DEGREES));
-						telemetry.addData("Measured Tilt (Pitch)", "%.2f°", currentRoll);
-					} else {
-						telemetry.addData("Status", "AprilTag seen, but 3D Pose data is unavailable.");
-					}
+					telemetry.addLine("At least one April Tag found");
+					telemetry.addData("April Tag ID:",tagId);
 				} else {
-					telemetry.addData("Status", "No AprilTags currently in view.");
+					telemetry.addData("Status", ">> no AprilTags in view <<");
 				}
 			} else {
+				telemetry.addLine(">> Result is null or invalid <<");
 				if (result == null) {
-					telemetry.addData("Status", "Limelight is searching for targets...");
+					telemetry.addLine("NULL");
 				} else {
+					telemetry.addLine("RESULT NOT VALID");
 					telemetry.addData("Status", "Limelight result: " + result);
 				}
 
